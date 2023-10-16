@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2021-03-20 9:12
+# @description: 当年的实验文件
 import numpy as np
 from matplotlib import pyplot as plt
 from utils.dataExamples import get_data_r2n4c18

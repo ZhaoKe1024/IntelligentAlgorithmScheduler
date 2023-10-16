@@ -3,10 +3,10 @@
 # @Time : 2021-04-22 11:22
 import numpy as np
 from matplotlib import pyplot as plt
-from DPSOTaskScheduling import DPSO
-from ChaosDPSOScheduler import ChaosDPSO
-from ChaosReproducePSO import ChaosReproductionPSO
-from ACScheduler import ACScheduler
+from schedulers.DPSOTaskScheduling import DPSO
+from schedulers.ChaosDPSOScheduler import ChaosDPSO
+from schedulers.ChaosReproducePSO import ChaosReproductionPSO
+from schedulers.ACScheduler import ACScheduler
 from intelligentAlgorithm.IntelligentAlgorithmScheduler.schedulers.GAScheduler import GAScheduler
 from utils.dataExamples import get_data_r2n3c12, get_data_r3n4c18
 from utils.dataExamples import get_data_r2n5c20, get_data_r2n6c24, get_data_r2n7c28

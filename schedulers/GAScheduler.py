@@ -2,8 +2,7 @@
 # @Author : ZhaoKe
 # @Time : 2021-03-21 10:43
 import numpy as np
-from utils.Entities import Cloudlet, VM, calculate_fitness
-from matplotlib import pyplot as plt
+from utils.Entities import calculate_fitness
 
 
 class Gene:
@@ -141,41 +140,3 @@ class GAScheduler:
         #             format='png')  # bbox_inches="tight"解决X轴时间两个字不被保存的问题
         # plt.show()
         return results
-
-
-if __name__ == '__main__':
-    nodes = [
-        VM(0, 0.762, 2, 920, 2223, 400, 2000),
-        VM(1, 0.762, 2, 1200, 2223, 1000, 2000),
-        VM(2, 0.762, 2, 850, 2223, 800, 2000),
-        VM(3, 0.762, 2, 1200, 2223, 900, 2000),  # 4
-    ]
-    lets = [
-        Cloudlet(0.078400, 60.689797, 228.9767518),
-        Cloudlet(0.065683, 185.848012, 187.979460),
-        Cloudlet(0.050440, 96.030497, 206.7731532),
-        Cloudlet(0.104019, 131.428883, 218.7860084),  # 4
-        Cloudlet(0.022355, 192.582491, 231.97106946),
-        Cloudlet(0.232862, 226.085299, 233.033903),
-        Cloudlet(0.194654, 77.503350, 190.41556474),
-        Cloudlet(0.148194, 241.349622, 264.54314854),  # 8
-        Cloudlet(0.146926, 199.978750, 248.28244),
-        Cloudlet(0.081256, 149.824589, 243.1697241),
-        Cloudlet(0.237547, 141.050771, 277.01199505),
-        Cloudlet(0.138457, 139.508608, 271.253561477),
-        Cloudlet(0.088451, 133.618232, 245.98393322),
-        Cloudlet(0.266167, 156.087665, 214.0397748),
-        Cloudlet(0.130581, 158.033508, 251.243065088),
-        Cloudlet(0.099247, 211.409329, 197.81288978),  # 16
-        Cloudlet(0.124647, 259.696868, 245.596727694),
-        Cloudlet(0.076976, 186.666789, 277.310805967),  # 18
-    ]
-    ga = GAScheduler(lets, nodes, times=200)
-    res = ga.execute()
-    print("最高适应度:", ga.best_gene.fitness)
-    # i = 0
-    # for _ in ga.best_gene.solution:
-    #     print("任务:", i, " 放置到机器", ga.vms[ga.best_gene.solution[i]].id, "上执行")
-    #     i += 1
-    plt.plot(range(ga.times), res)
-    plt.show()
