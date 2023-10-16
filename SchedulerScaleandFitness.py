@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from DPSOTaskScheduling import DPSO
 from HPRPSOScheduler import HPRPSO
 from SAScheduler import SAScheduler
-from GAScheduler import GAScheduler
+from intelligentAlgorithm.IntelligentAlgorithmScheduler.schedulers.GAScheduler import GAScheduler
 from ACScheduler import ACScheduler
 from utils.dataExamples import get_data_r2n3c12, get_data_r2n4c18
 from utils.dataExamples import get_data_r2n5c20, get_data_r2n6c24, get_data_r2n7c28
@@ -28,7 +28,7 @@ def scheduler_test(data):
     dpso_generation = dpso.exec()
     sa_generation = sa.sa_main()
     ac_generation = ac.scheduler_main()
-    ga_generation = ga.ga_main()
+    ga_generation = ga.execute()
 
     return [hprpso_generation[-1], dpso_generation[-1], sa_generation[-1], ac_generation[-1], ga_generation[-1]]
 

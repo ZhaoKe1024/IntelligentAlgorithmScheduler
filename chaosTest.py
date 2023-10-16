@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2021-04-22 11:22
-from utils.Entities import Cloudlet, VM
 import numpy as np
 from matplotlib import pyplot as plt
 from DPSOTaskScheduling import DPSO
 from ChaosDPSOScheduler import ChaosDPSO
 from ChaosReproducePSO import ChaosReproductionPSO
 from ACScheduler import ACScheduler
-from GAScheduler import GAScheduler
+from intelligentAlgorithm.IntelligentAlgorithmScheduler.schedulers.GAScheduler import GAScheduler
 from utils.dataExamples import get_data_r2n3c12, get_data_r3n4c18
 from utils.dataExamples import get_data_r2n5c20, get_data_r2n6c24, get_data_r2n7c28
 
@@ -41,7 +40,7 @@ def iterate(nodes, lets, saveind):
     crpso_generation = crpso.exec()
     cpso_generation = cpso.exec()
     dpso_generation = dpso.exec()
-    ga_generation = ga.ga_main()
+    ga_generation = ga.execute()
     aco_generation = aco.scheduler_main()
     res = [crpso_generation, cpso_generation, dpso_generation, ga_generation, aco_generation]
     np.savetxt("chaos-res-matrix/res-"+str(saveind)+".txt", res, delimiter=',', encoding="GB2312")

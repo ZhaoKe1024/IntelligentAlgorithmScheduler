@@ -5,17 +5,20 @@ import numpy as np
 
 
 class Cloudlet:
-    def __init__(self, cpu_demand: float, mem_demand: float):  # , hd_demand=0
+    def __init__(self, cpu_demand: float, mem_demand: float, hd_demand):  # , hd_demand=0
         self.cpu_demand = cpu_demand
         self.mem_demand = mem_demand
         # # 100M ~ 2000M
-        # self.hd_demand = hd_demand
+        self.hd_demand = hd_demand
 
     def getData(self):
         return [self.cpu_demand, self.mem_demand]  # + "," + str(self.hd_demand)
 
     def __str__(self):
         return "Cloudlet: cpu:" + str(self.cpu_demand) + ", mem:" + str(self.mem_demand)  # + ", hd:" + str(self.hd_demand)
+
+    def str_as_row(self):
+        return f"{self.cpu_demand},{self.mem_demand},{self.hd_demand}"
 
 
 class VM:
@@ -38,6 +41,8 @@ class VM:
                + ", mem:" + str(self.mem_supply) + "/" + str(self.mem_capacity)  # \
         # + ", hd:" + str(self.hd_supply) + "/" + str(self.hd_capacity)
 
+    def str_as_row(self):
+        return f"{self.id},{self.cpu_supply},{self.cpu_velocity},{self.mem_supply},{self.mem_capacity}"
 
 # 评价函数
 def evaluate_particle(p, cloudlets, vms) -> int:

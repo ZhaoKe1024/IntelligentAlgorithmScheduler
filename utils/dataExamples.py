@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2021-04-07 11:33
-from CloudSchedulers.utils.Entities import Cloudlet, VM
+from utils.Entities import Cloudlet, VM
 import numpy as np
 import scipy as sp
 

@@ -5,7 +5,17 @@
 需要注意的是，全都是离散调度问题，也就是说所有粒子群都是离散粒子群算法
 
 #### 软件架构
-utils.Entities里面是实验对象以及评价函数
+utils.Entities里面是实验对象以及评价函数:
+- Cloudlet: cloud tasks to allocated
+- VM Virtual Machines to execute tasks(cloudlets)
+
+schedulers/*.py are all algorithms to simulate , Support Algorithms:
+- GA: Generation Algorithm
+- SA: Simulate Anneal Algorithm
+- ACO: Ant Colony Optimization Algorithm
+- PSO: Particle Swarm Optimization Algorithm 
+- others
+
 根目录全是算法：ChaosDPSO（混沌优化离散粒子群算法）、ChaosHPSO（稍作修改的混沌优化粒子群算法）、newPSO（稍作改进提升粒子群算法）、DPSO（二进制粒子群算法，不过其实是普通的离散粒子群算法）、ACO（蚁群算法）、SA（模拟退火算法）、GA（遗传算法）、TS（禁忌搜索算法有待修改，目前可能有误）
 
 #### 安装教程
