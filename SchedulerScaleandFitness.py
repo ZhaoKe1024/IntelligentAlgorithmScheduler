@@ -25,8 +25,8 @@ def scheduler_test(data):
     ga = GAScheduler(cloudlets=data["cloudlets"], vms=data["nodes"], population_number=population, times=MAX_GEN)
 
     hprpso_generation = hprpso.exec()
-    dpso_generation = dpso.exec()
-    sa_generation = sa.sa_main()
+    dpso_generation = dpso.execute()
+    sa_generation = sa.execute()
     ac_generation = ac.scheduler_main()
     ga_generation = ga.execute()
 

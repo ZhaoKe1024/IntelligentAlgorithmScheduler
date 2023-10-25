@@ -5,44 +5,54 @@ import numpy as np
 
 
 class Cloudlet:
-    def __init__(self, cpu_demand: float, mem_demand: float, hd_demand):  # , hd_demand=0
+    def __init__(self, cpu_demand: float, mem_demand: float, hd_demand, bw_demand):
         self.cpu_demand = cpu_demand
         self.mem_demand = mem_demand
         # # 100M ~ 2000M
         self.hd_demand = hd_demand
+        self.bw_demand = bw_demand
 
     def getData(self):
         return [self.cpu_demand, self.mem_demand]  # + "," + str(self.hd_demand)
 
     def __str__(self):
-        return "Cloudlet: cpu:" + str(self.cpu_demand) + ", mem:" + str(self.mem_demand)  # + ", hd:" + str(self.hd_demand)
+        return ("Cloudlet: cpu:" + str(self.cpu_demand) + ", mem:" + str(self.mem_demand)
+                + ", hd:" + str(self.hd_demand)
+                + ", bw:" + str(self.bw_demand))
 
     def str_as_row(self):
-        return f"{self.cpu_demand},{self.mem_demand},{self.hd_demand}"
+        return f"{self.cpu_demand},{self.mem_demand},{self.hd_demand},{self.bw_demand}"
 
 
 class VM:
     def __init__(self, vm_id: int, cpu_supply: float, cpu_velocity: float, mem_supply: float, mem_capacity: float,
-                 hd_supply=0, hd_capacity=0):
+                 hd_supply=0., hd_capacity=0., bw_supply=0., bw_capacity=0.):
         self.id = vm_id
         self.cpu_supply = cpu_supply
         self.cpu_velocity = cpu_velocity
         self.mem_supply = mem_supply
         self.mem_capacity = mem_capacity
-        # self.hd_supply = hd_supply
-        # self.hd_capacity = hd_capacity
+        self.hd_supply = hd_supply
+        self.hd_capacity = hd_capacity
+        self.bw_supply = bw_supply
+        self.bw_capacity = bw_capacity
 
     def getData(self):
-        return [self.id, self.cpu_supply, self.cpu_velocity, self.mem_supply, self.mem_capacity]  # \
-        # + "," + str(self.hd_supply) + "," + str(self.hd_capacity)
+        return [self.id, self.cpu_supply, self.cpu_velocity, self.mem_supply, self.mem_capacity  # \
+            , self.hd_supply, self.hd_capacity
+            , self.bw_supply, self.bw_capacity]
 
     def __str__(self):
         return "Node:" + str(self.id) + "--cpu:" + str(self.cpu_supply) + "/" + str(self.cpu_velocity) \
-               + ", mem:" + str(self.mem_supply) + "/" + str(self.mem_capacity)  # \
-        # + ", hd:" + str(self.hd_supply) + "/" + str(self.hd_capacity)
+            + ", mem:" + str(self.mem_supply) + "/" + str(self.mem_capacity) \
+            + ", hd:" + str(self.hd_supply) + "/" + str(self.hd_capacity) \
+            + ", bw:" + str(self.bw_supply) + "/" + str(self.bw_capacity)
 
     def str_as_row(self):
-        return f"{self.id},{self.cpu_supply},{self.cpu_velocity},{self.mem_supply},{self.mem_capacity}"
+        return (f"{self.id},{self.cpu_supply},{self.cpu_velocity},{self.mem_supply},{self.mem_capacity},"
+                + f"{self.hd_supply},{self.hd_capacity},"
+                + f"{self.bw_supply},{self.bw_capacity}")
+
 
 # 评价函数
 def evaluate_particle(p, cloudlets, vms) -> int:

@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from utils.Entities import Cloudlet, VM, calculate_fitness
+from utils.Entities import calculate_fitness
 from utils.AlgorithmEntities import DParticle
 
 
@@ -60,7 +60,7 @@ class DPSO:
         p.solution = list(map(int, p.solution))
 
     # 离散粒子群算法
-    def exec(self):
+    def execute(self):
         # 初始化基因，基因包含染色体和染色体的适应度
         self.init_population()
         self.gbest = self.find_best()
@@ -92,7 +92,7 @@ class DPSO:
 
     # 输出结果
     def schedule(self):
-        result = self.exec()
+        result = self.execute()
         # print("exec结果result：")
         # print(result)  # 打印出来是个引用，因为result是GeneEvaluation
         i = 0
@@ -104,35 +104,3 @@ class DPSO:
         # plt.ylim(2.55 ,2.72)
         # plt.savefig('BPSOScheduler-popu100-iter150-w095-cg2-cl2.png', dpi=300, format='png')  # bbox_inches="tight"解决X轴时间两个字不被保存的问题
         plt.show()
-
-
-if __name__ == '__main__':
-    # 测试数据
-    nodes = [
-        VM(0, 0.762, 2, 920, 2223, 400, 2000, 5.9, 30),
-        VM(1, 0.762, 2, 1200, 2223, 1000, 2000, 6, 30),
-        VM(2, 0.762, 2, 850, 2223, 800, 2000, 5.8, 30),
-        VM(3, 0.762, 2, 1200, 2223, 900, 2000, 5.9, 30),  # 4
-    ]
-    lets = [
-        Cloudlet(0.078400, 60.689797, 228.9767525518272, 2.712677828249846),
-        Cloudlet(0.065683, 185.848012, 187.97925460500625, 5.1178778788024),
-        Cloudlet(0.050440, 96.030497, 206.77315938787453, 4.264445831060432),
-        Cloudlet(0.104019, 131.428883, 218.78608382384854, 2.209277743955084),  # 4
-        Cloudlet(0.022355, 192.582491, 231.9710696727387, 3.26584657336946),
-        Cloudlet(0.232862, 226.085299, 233.03395445541793, 4.289629843497603),
-        Cloudlet(0.194654, 77.503350, 190.41556439297744, 4.626189837323374),
-        Cloudlet(0.148194, 241.349622, 264.54311244786555, 4.095493414214854),  # 8
-        Cloudlet(0.146926, 199.978750, 248.2824412513349, 3.6236622746002953),
-        Cloudlet(0.081256, 149.824589, 243.16971522421468, 4.009965930243791),
-        Cloudlet(0.237547, 141.050771, 277.01199985466394, 4.671274901135505),
-        Cloudlet(0.138457, 139.508608, 271.25359518569496, 3.9828754698861477),
-        Cloudlet(0.088451, 133.618232, 245.98393640211285, 3.81448563152322),
-        Cloudlet(0.266167, 156.087665, 214.0395006818089, 5.657246768827748),
-        Cloudlet(0.130581, 158.033508, 251.24327206708733, 5.252957834065088),
-        Cloudlet(0.099247, 211.409329, 197.81288865451026, 4.240369159034978),  # 16
-        Cloudlet(0.124647, 259.696868, 245.59672377663492, 7.850605743087694),
-        Cloudlet(0.076976, 186.666789, 277.3108057619953, 2.440325446644967),  # 18
-    ]
-    bpso = DPSO(lets, nodes, times=150)
-    bpso.schedule()

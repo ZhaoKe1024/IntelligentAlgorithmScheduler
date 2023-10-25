@@ -39,7 +39,7 @@ def iterate(nodes, lets, saveind):
 
     crpso_generation = crpso.exec()
     cpso_generation = cpso.exec()
-    dpso_generation = dpso.exec()
+    dpso_generation = dpso.execute()
     ga_generation = ga.execute()
     aco_generation = aco.scheduler_main()
     res = [crpso_generation, cpso_generation, dpso_generation, ga_generation, aco_generation]
