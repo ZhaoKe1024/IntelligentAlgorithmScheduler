@@ -4,6 +4,10 @@
 # @Author: ZhaoKe
 # @File : LinkedMatrix.py
 # @Software: PyCharm
+"""
+链表型邻接矩阵，特点是稀疏
+每一行都是一个SortedSinglyList
+"""
 from entities.sortedlist import SortedSinglyList, Triple
 
 

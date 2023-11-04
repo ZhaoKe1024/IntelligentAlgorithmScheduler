@@ -4,6 +4,17 @@
 # @Author: ZhaoKe
 # @File : AdjList_Graph.py
 # @Software: PyCharm
+"""
+Graph Structure based on Adjacent Matrix
+functions:
+1 depth first traverse
+2 breadth first traverse
+3 Dijkstra, Floyd,
+application:
+1. AOE activity on edges
+2. AOV activity on vertices
+"""
+import random
 from collections import deque
 
 import numpy as np
@@ -15,8 +26,7 @@ class AdjListGraph(object):
     def __init__(self, vertex_list, edges):
         self._vertex_list = vertex_list
         self._edge_list = edges
-        self.adj_list = LinkedMatrix(len(vertex_list), len(vertex_list), edges)
-        self._adj_list = None
+        self._adj_list = LinkedMatrix(len(vertex_list), len(vertex_list), edges)
         self.MAX_WEIGHT = np.inf
 
     def DFS_Traverse(self, index):
@@ -50,7 +60,7 @@ class AdjListGraph(object):
                 print('{', end='')
                 self.__breadth_fs(j, visited)
                 print('}')
-            j = (j+1) % self.vertex_count()
+            j = (j + 1) % self.vertex_count()
             if j == i:
                 break
         print()
@@ -113,8 +123,8 @@ class Edge(object):
 
 if __name__ == '__main__':
     print("OK")
-    vertices = [Vertex(i, chr(65 + i)) for i in range(6)]
-    edges = [
+    vertices0 = [Vertex(i, chr(65 + i)) for i in range(10)]
+    edges0 = [
         Triple(0, 1, 3),
         Triple(0, 2, 2),
         Triple(1, 3, 2),
@@ -124,11 +134,31 @@ if __name__ == '__main__':
         Triple(3, 5, 2),
         Triple(4, 5, 1),
     ]
-    graph = AdjListGraph(vertices, edges)
+    vertices1 = [Vertex(i, chr(65 + i)) for i in range(10)]
+    edges1 = [
+        Triple(0, 1, 5),
+        Triple(0, 2, 6),
+        Triple(1, 3, 3),
+        Triple(2, 3, 6),
+        Triple(2, 4, 3),
+        Triple(3, 4, 3),
+        Triple(3, 5, 4),
+        Triple(3, 6, 5),
+        Triple(4, 6, 1),
+        Triple(4, 7, 10),
+        Triple(5, 9, 4),
+        Triple(6, 8, 5),
+        Triple(7, 8, 2),
+        Triple(8, 9, 2)
+    ]
+    random.shuffle(edges1)
+    for edge in edges1:
+        print(edge)
+    graph = AdjListGraph(vertices1, edges1)
     print("----Graph----")
-    for item in graph.adj_list.row_list:
+    for item in graph._adj_list.row_list:
         print(item)
     print("----DFS----")
-    graph.DFS_Traverse(0)
-    # print("----BFS----")
-    # graph.BFS_Traverse(0)
+    graph.DFS_Traverse(6)
+    print("----BFS----")
+    graph.BFS_Traverse(3)

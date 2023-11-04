@@ -4,6 +4,17 @@
 # @Author: ZhaoKe
 # @File : sortedlist.py
 # @Software: PyCharm
+"""
+排序单链表，结点按值排序
+
+SortedSinglyList<Node<Triple>>
+SortedSinglyList.head -> Node<Triple>
+Node.data -> Triple
+Triple(pre, post, values)
+
+list.data.value
+SortedSinglyList.Node.Triple.value
+"""
 import functools
 
 
