@@ -26,7 +26,7 @@ class AdjListGraph(object):
     def __init__(self, vertex_list, edges):
         self._vertex_list = vertex_list
         self._edge_list = edges
-        self._adj_list = LinkedMatrix(len(vertex_list), len(vertex_list), edges)
+        self.AdjMatrix = LinkedMatrix(len(vertex_list), len(vertex_list), edges)
         self.MAX_WEIGHT = np.inf
 
     def DFS_Traverse(self, index):
@@ -84,7 +84,7 @@ class AdjListGraph(object):
         n = self.vertex_count()
         if (
                 0 < i < n and -1 < j != i):
-            link = self._adj_list.row_list[i]
+            link = self.AdjMatrix.row_list[i]
             find = link.head.next_node
             if j == -1:
                 return find.data.column if (find is not None) else -1
@@ -109,6 +109,8 @@ class Vertex(object):
     def __init__(self, index, name):
         self.index = index
         self.name = name
+        # vertex as activity
+        self.dur = None
 
     def __str__(self):
         return f"vertex:{self.index}, v_name:{self.name}"
@@ -156,7 +158,7 @@ if __name__ == '__main__':
         print(edge)
     graph = AdjListGraph(vertices1, edges1)
     print("----Graph----")
-    for item in graph._adj_list.row_list:
+    for item in graph.AdjMatrix.row_list:
         print(item)
     print("----DFS----")
     graph.DFS_Traverse(6)

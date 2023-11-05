@@ -44,8 +44,8 @@ class DPSO:
         return best_particle
 
     def update_velocity(self, p: DParticle, lb: DParticle, gb: DParticle):
-        E1 = np.array([np.random.random() for n in range(self.cloudlet_num)])  # [0.1, 0.2, 0.002, 0.4, ...]
-        E2 = np.array([np.random.random() for n in range(self.cloudlet_num)])
+        E1 = np.array([np.random.random() for _ in range(self.cloudlet_num)])  # [0.1, 0.2, 0.002, 0.4, ...]
+        E2 = np.array([np.random.random() for _ in range(self.cloudlet_num)])
         v1 = np.array(gb.solution) - np.array(p.solution)
         v2 = np.array(lb.solution) - np.array(p.solution)
         velocity = self.c1 * E1 * v1 + self.c2 * E2 * v2
