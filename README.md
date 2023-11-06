@@ -29,7 +29,7 @@ schedulers/*.py 用来仿真的预定义算法  , Support Algorithms.
 
 ChaosDPSO（混沌优化离散粒子群算法）、ChaosHPSO（稍作修改的混沌优化粒子群算法）、newPSO（稍作改进提升粒子群算法）、DPSO（二进制粒子群算法，不过其实是普通的离散粒子群算法）、ACO（蚁群算法）、SA（模拟退火算法）、GA（遗传算法）、TS（禁忌搜索算法有待修改，目前可能有误）
 
-utils/*.py: 工具类
+utils/*.py: 工具类[README.md](README.md)
 
 其他以及未介绍的代码都是工具类或者当年的废弃代码
 

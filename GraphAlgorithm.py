@@ -16,15 +16,12 @@
 # 求解最早、最迟发生时间
 """
 from collections import deque
-
-from entities.AdjList_Graph import AdjListGraph, Vertex
-from entities.graph_entities import Edge
+from entities.graph_entities import Vertex, Edge
 
 
 class AOE(object):
     def __init__(self, vertex_list, edges):
         self.vertex_list = vertex_list
-        self.DAG = AdjListGraph(vertex_list, edges)
 
         self.__que = deque()
         self.__in_degree_list = [0 for _ in range(len(vertex_list))]
@@ -32,13 +29,17 @@ class AOE(object):
         for ed in edges:
             self.__in_degree_list[ed.post_v] += 1
 
+        self.adj_dag = [[] for _ in vertex_list]
+        for edge in edges:
+            self.adj_dag[edge.pre_v].append(vertex_list[edge.post_v])
+
     # 返回一个拓扑序列
     def topological_sort(self):
-        V = self.DAG.vertex_count()
+        V = len(self.vertex_list)
         print("count of vertex:", V)
         for i in range(V):
             if self.__in_degree_list[i] == 0:
-                self.__que.append(self.DAG.get_vertex(i))
+                self.__que.append(self.vertex_list[i])
         res = []
         count = 0
         while len(self.__que) > 0:
@@ -53,30 +54,84 @@ class AOE(object):
         else:
             return res
 
-    def __traverse_apply(self, index):
-        p = self.DAG.AdjMatrix.row_list[index].head.next_node
-        while p:
-            # print(p.data)
-            self.__in_degree_list[p.data.post_v] -= 1
-            if self.__in_degree_list[p.data.post_v] == 0:
-                self.__que.append(self.vertex_list[p.data.post_v])
-            p = p.next_node
-        # return new_list
+    def __traverse_apply(self, ind):
+        for ver in self.adj_dag[ind]:
+            self.__in_degree_list[ver.index] -= 1
+            if self.__in_degree_list[ver.index] == 0:
+                self.__que.append(ver)
 
     # 判断序列是不是该图的拓扑序列
     def check_path(self, path):
         assert len(path) == len(self.vertex_list), "length not matches."
         path_r = path[::-1]
-        # print("reverse path:", path_r)
         for i in range(len(path)):
-            link = self.DAG.AdjMatrix.row_list[path_r[i]].head.next_node
-            tmp = []
-            while link:
-                tmp.append(link.data.post_v)
-                link = link.next_node
-            # print(f"vertex {path_r[i]}, post: ", tmp)
-            for j in range(len(path)-i-1):
-                # print(self.vertex_list[path[j]].index)
+            tmp = [ver.index for ver in self.adj_dag[path_r[i]]]
+            for j in range(len(path) - i - 1):
+                if self.vertex_list[path[j]].index in tmp:
+                    return False
+        return True
+
+
+class AOV(object):
+    def __init__(self, vertex_list, edges):
+        self.vertex_list = vertex_list
+        self.__in_degree_list = [0 for _ in range(len(vertex_list))]
+
+        for ed in edges:
+            self.__in_degree_list[ed.post_v] += 1
+
+        self.adj_dag = [[] for _ in vertex_list]
+        for edge in edges:
+            self.adj_dag[edge.pre_v].append(vertex_list[edge.post_v])
+        # for adj_link in self.adj_dag:
+        #     print([ver.index for ver in adj_link])
+
+        self.marked = [False for _ in range(len(vertex_list))]
+        self.topological_set = []
+
+    # 返回一个拓扑序列
+    def topological_sort_all(self):
+        self.topological_sort(deque())
+        return self.topological_set
+
+    def topological_sort(self, topo_vec):
+        if len(topo_vec) == len(self.vertex_list):
+            # print(topo_vec)
+            # topo_vec.append(vertex)
+            # print("here", self.vertex_list[i])
+            # print(self.__in_degree_list)
+            # print("result:", [ver_1.index for ver_1 in topo_vec])
+            self.topological_set.append(list(topo_vec.copy()))
+            # self.topological_set.append([ver_1.index for ver_1 in topo_vec])
+            # return
+        for i in range(len(self.vertex_list)):
+            if self.__in_degree_list[i] == 0 and not self.marked[i]:
+                self.marked[i] = True
+                topo_vec.append(self.vertex_list[i])
+                # print("push", [ver_1.index for ver_1 in topo_vec])
+                self.__traverse_apply(self.vertex_list[i].index, False)
+
+                self.topological_sort(topo_vec)
+
+                self.__traverse_apply(self.vertex_list[i].index, True)
+                topo_vec.pop()
+                # print("pop", [ver_1.index for ver_1 in topo_vec])
+                self.marked[i] = False
+
+    def __traverse_apply(self, ind, add_or_sub=False):
+        for ver in self.adj_dag[ind]:
+            if add_or_sub:
+                self.__in_degree_list[ver.index] += 1
+            else:
+                self.__in_degree_list[ver.index] -= 1
+
+    # 判断序列是不是该图的拓扑序列
+    def check_path(self, path):
+        assert len(path) == len(self.vertex_list), "length not matches."
+        path_r = path[::-1]
+        for i in range(len(path)):
+            tmp = [ver.index for ver in self.adj_dag[path_r[i]]]
+            for j in range(len(path) - i - 1):
                 if self.vertex_list[path[j]].index in tmp:
                     return False
         return True
@@ -98,13 +153,18 @@ if __name__ == '__main__':
         Edge(6, 8, 2),
         Edge(7, 8, 4)
     ]
-    graph = AOE(vertices1, edges1)
-    res = graph.topological_sort()
+    graph = AOV(vertices1, edges1)
+    # graph.topological_sort_all()
     # for item in res:
     #     print(item.index, end=', ')
     # print()
-    path1 = [0, 3, 1, 2, 5, 4, 7, 6, 8]
-    print(graph.check_path(path1))
-    path2 = [1, 2, 3, 0, 5, 6, 4, 7, 8]
-    print(graph.check_path(path2))
-
+    # path1 = [0, 3, 1, 2, 5, 4, 7, 6, 8]
+    # print(graph.check_path(path1))
+    # path2 = [1, 2, 3, 0, 5, 6, 4, 7, 8]
+    all_topo_orders = graph.topological_sort_all()
+    # print("all")
+    print(all_topo_orders)
+    for topo in all_topo_orders:
+        # print(topo)
+        print(graph.check_path([ver.index for ver in topo]))
+    # print(graph.check_path(path2))

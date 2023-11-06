@@ -30,6 +30,7 @@ class AdjListGraph(object):
         self.AdjMatrix = LinkedMatrix(len(vertex_list), len(vertex_list), edges)
         self.MAX_WEIGHT = np.inf
 
+
     def DFS_Traverse(self, index):
         visited = [False for _ in range(self.vertex_count())]
         j = index

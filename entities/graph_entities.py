@@ -8,7 +8,7 @@ import numpy as np
 
 
 class Vertex(object):
-    def __init__(self, index, name):
+    def __init__(self, index, name, dur=None):
         self.index = index
         self.name = name
         # vertex as activity
@@ -16,6 +16,9 @@ class Vertex(object):
 
     def __str__(self):
         return f"vertex:{self.index}, v_name:{self.name}"
+
+    def __eq__(self, other):
+        return self.index == other.index
 
 
 class Edge(object):
