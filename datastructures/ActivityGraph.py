@@ -89,6 +89,10 @@ class AOV(object):
         self.marked = [False for _ in range(len(vertex_list))]
         self.topological_set = []
 
+    def key_path(self):
+        """关键路径"""
+        pass
+
     # 返回一个拓扑序列
     def topological_sort_all(self):
         self.topological_sort(deque())

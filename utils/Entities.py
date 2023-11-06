@@ -54,87 +54,6 @@ class VM:
                 + f"{self.bw_supply},{self.bw_capacity}")
 
 
-class DAG(object):
-    def __init__(self, num=0, edges=None, weights=None):
-        self.num_vertices = num
-        self.num_edges = 0
-        self.adj_list = [[] for _ in range(num)]
-        self.weights = [[] for _ in range(num)]
-
-        self.__has_cycle = False
-        self.__marked = None
-        self.__on_stack = None
-
-        self.__linear_list = None
-
-        if edges is not None:
-            for i in range(len(edges)):
-                if weights:
-                    self.add_edge(edges[i][0], edges[i][1], weights[i])
-                else:
-                    self.add_edge(edges[i][0], edges[i][1], 1)
-
-    def add_edge(self, pre, post, weight=None):
-        self.adj_list[pre].append(post)
-
-        self.__has_cycle = False
-        self.__check_cycle(pre)
-        if self.__has_cycle:
-            print("Add edge failed! It will form a cycle if this edge was been added to this graph.")
-            self.adj_list[pre].pop()
-            if weight:
-                self.weights[pre].append(weight)
-            else:
-                self.weights[pre].append(1.)
-        else:
-            self.num_edges += 1
-
-    def add_vertices(self):
-        self.num_vertices += 1
-        self.adj_list.append([])
-
-    def count_vertices(self):
-        return self.num_vertices
-
-    def count_edges(self):
-        return self.num_edges
-
-    def get_linear_list(self):
-        self.__marked = [False for _ in range(self.num_vertices)]
-        self.__linear_list = []
-        for v in range(self.num_vertices):
-            if not self.__marked[v]:
-                self.__dfs4lin(v)
-        return self.__linear_list[::-1]
-
-    def __dfs4lin(self, v):
-        self.__marked[v] = True
-        for w in self.adj_list[v]:
-            if not self.__marked[w]:
-                self.__dfs4lin(w)
-        self.__linear_list.append(v)
-
-    def __check_cycle(self, v):
-        self.__marked = [False for _ in range(self.num_vertices)]
-        self.__on_stack = [False for _ in range(self.num_vertices)]
-        self.__has_cycle = False
-        if not self.__marked[v]:
-            print(v)
-            self.__dfs4check(v)
-
-    def __dfs4check(self, v):
-        self.__marked[v] = True
-        self.__on_stack[v] = True
-        for w in self.adj_list[v]:
-            print(v, w)
-            if not self.__marked[w]:
-                self.__dfs4check(w)
-            if self.__on_stack[w]:
-                self.__has_cycle = True
-                return
-        self.__on_stack[v] = False
-
-
 # 评价函数
 def evaluate_particle(p, cloudlets, vms) -> int:
     cpu_util = np.zeros(len(vms))
@@ -194,9 +113,3 @@ def calculate_fitness(p, cloudlets, vms) -> float:
     return 1 / evaluate_particle(p, cloudlets, vms)
 
 
-if __name__ == '__main__':
-    edges = [[0, 2], [0, 3], [1, 3], [2, 4], [3, 4], [4, 5]]
-    dag = DAG(num=6, edges=edges)
-    # print(dag.adj_list)
-    lin = dag.get_linear_list()
-    print(lin)
