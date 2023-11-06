@@ -19,8 +19,8 @@ from collections import deque
 
 import numpy as np
 
-from entities.LinkedMatrix import LinkedMatrix
-from entities.graph_entities import Edge, Vertex
+from datastructures.LinkedMatrix import LinkedMatrix
+from datastructures.graph_entities import Edge, Vertex
 
 
 class AdjListGraph(object):

@@ -17,7 +17,7 @@ SortedSinglyList.Node.Triple.value
 """
 import functools
 
-from entities.graph_entities import Edge
+from datastructures.graph_entities import Edge
 
 
 class SortedSinglyList(object):

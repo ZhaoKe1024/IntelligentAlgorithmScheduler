@@ -8,8 +8,8 @@
 链表型邻接矩阵，特点是稀疏
 每一行都是一个SortedSinglyList
 """
-from entities.sortedlist import SortedSinglyList
-from entities.graph_entities import Edge
+from datastructures.sortedlist import SortedSinglyList
+from datastructures.graph_entities import Edge
 
 
 class LinkedMatrix(object):
