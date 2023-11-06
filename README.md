@@ -1,4 +1,4 @@
-[Endlish](README_en.md)|[简体中文](README.md)
+[Endlish](README.md)|[简体中文](README_cn.md)
 
 # IntelligentAlgorithm-CloudScheduler
 
