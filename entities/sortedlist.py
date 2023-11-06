@@ -17,6 +17,8 @@ SortedSinglyList.Node.Triple.value
 """
 import functools
 
+from entities.graph_entities import Edge
+
 
 class SortedSinglyList(object):
     def __init__(self, values=None):
@@ -97,41 +99,24 @@ class Node(object):
         self.next_node = next_node
 
     def __str__(self):
-        return str(self.data.value)
-
-
-class Triple(object):
-    def __init__(self, row, column, value):
-        self.row = row
-        self.column = column
-        self.value = value
-
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, Triple):
-            return False
-        return self.column == other.column and self.row == other.row and self.value == other.value
-
-    def __str__(self):
-        return f"({self.row},{self.column},{self.value})"
+        return str(self.data.weight)
 
 
 def cmp_triples(t1, t2):
-    if t1.row == t2.row and t1.column == t2.column:
+    if t1.pre_v == t2.pre_v and t1.post_v == t2.post_v:
         return 0
-    return -1 if t1.row < t2.row or (t1.row == t2.row and t1.column < t2.column) else 1
+    return -1 if t1.pre_v < t2.pre_v or (t1.pre_v == t2.pre_v and t1.post_v < t2.post_v) else 1
 
 
 if __name__ == '__main__':
-    sl = SortedSinglyList([Triple(1, 3, 4),
-                           Triple(2, 6, 8),
-                           Triple(2, 2, 3),
-                           Triple(1, 8, 6),
-                           Triple(3, 5, 4)])
+    sl = SortedSinglyList([Edge(1, 3, 4),
+                           Edge(2, 6, 8),
+                           Edge(2, 2, 3),
+                           Edge(1, 8, 6),
+                           Edge(3, 5, 4)])
     print(sl)
     print(sl.size())
-    sl.insert(Triple(3,2,1))
+    sl.insert(Edge(3,2,1))
     # print(cmp_triples(Triple(1, 8, 6), Triple(1, 8, 6)))
     # print(cmp_triples(Triple(1, 2, 6), Triple(1, 3, 4)))
     # print(cmp_triples(Triple(1, 8, 6), Triple(1, 2, 6)))

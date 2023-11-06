@@ -19,7 +19,8 @@ from collections import deque
 
 import numpy as np
 
-from entities.LinkedMatrix import Triple, LinkedMatrix
+from entities.LinkedMatrix import LinkedMatrix
+from entities.graph_entities import Edge, Vertex
 
 
 class AdjListGraph(object):
@@ -88,7 +89,7 @@ class AdjListGraph(object):
             find = link.head.next_node
             if j == -1:
                 return find.data.column if (find is not None) else -1
-            find = link.search(Triple(i, j, 0))
+            find = link.search(Edge(i, j, 0))
             if find is not None:
                 find = find.next_node
                 if find is not None:
@@ -105,53 +106,36 @@ class AdjListGraph(object):
         return len(self._vertex_list)
 
 
-class Vertex(object):
-    def __init__(self, index, name):
-        self.index = index
-        self.name = name
-        # vertex as activity
-        self.dur = None
-
-    def __str__(self):
-        return f"vertex:{self.index}, v_name:{self.name}"
-
-
-class Edge(object):
-    def __init__(self, pre, post, weight=np.inf):
-        self.pre_v = pre
-        self.post_v = post
-        self.weight = weight
-
 
 if __name__ == '__main__':
     print("OK")
     vertices0 = [Vertex(i, chr(65 + i)) for i in range(10)]
     edges0 = [
-        Triple(0, 1, 3),
-        Triple(0, 2, 2),
-        Triple(1, 3, 2),
-        Triple(2, 3, 4),
-        Triple(1, 4, 3),
-        Triple(2, 5, 3),
-        Triple(3, 5, 2),
-        Triple(4, 5, 1),
+        Edge(0, 1, 3),
+        Edge(0, 2, 2),
+        Edge(1, 3, 2),
+        Edge(2, 3, 4),
+        Edge(1, 4, 3),
+        Edge(2, 5, 3),
+        Edge(3, 5, 2),
+        Edge(4, 5, 1),
     ]
     vertices1 = [Vertex(i, chr(65 + i)) for i in range(10)]
     edges1 = [
-        Triple(0, 1, 5),
-        Triple(0, 2, 6),
-        Triple(1, 3, 3),
-        Triple(2, 3, 6),
-        Triple(2, 4, 3),
-        Triple(3, 4, 3),
-        Triple(3, 5, 4),
-        Triple(3, 6, 5),
-        Triple(4, 6, 1),
-        Triple(4, 7, 10),
-        Triple(5, 9, 4),
-        Triple(6, 8, 5),
-        Triple(7, 8, 2),
-        Triple(8, 9, 2)
+        Edge(0, 1, 5),
+        Edge(0, 2, 6),
+        Edge(1, 3, 3),
+        Edge(2, 3, 6),
+        Edge(2, 4, 3),
+        Edge(3, 4, 3),
+        Edge(3, 5, 4),
+        Edge(3, 6, 5),
+        Edge(4, 6, 1),
+        Edge(4, 7, 10),
+        Edge(5, 9, 4),
+        Edge(6, 8, 5),
+        Edge(7, 8, 2),
+        Edge(8, 9, 2)
     ]
     random.shuffle(edges1)
     for edge in edges1:

@@ -8,7 +8,8 @@
 链表型邻接矩阵，特点是稀疏
 每一行都是一个SortedSinglyList
 """
-from entities.sortedlist import SortedSinglyList, Triple
+from entities.sortedlist import SortedSinglyList
+from entities.graph_entities import Edge
 
 
 class LinkedMatrix(object):
@@ -23,7 +24,7 @@ class LinkedMatrix(object):
     def set(self, i, j, x):
         if 0 <= i < self.rows and 0 <= j < self.columns:
             link = self.row_list[i]
-            tri = Triple(i, j, x)
+            tri = Edge(i, j, x)
             find = link.search(tri)
             if find:
                 find.value = x
@@ -31,7 +32,7 @@ class LinkedMatrix(object):
                 link.insert(tri)
 
     def set_triple(self, tri):
-        self.set(tri.row, tri.column, tri.value)
+        self.set(tri.pre_v, tri.post_v, tri.weight)
 
     def print_matrix(self):
         for row_list_item in self.row_list:
@@ -40,21 +41,21 @@ class LinkedMatrix(object):
 
 if __name__ == '__main__':
     elems = [
-        Triple(0,1,45),
-        Triple(0,2,28),
-        Triple(0,3,10),
-        Triple(1,0,45),
-        Triple(2,0,28),
-        Triple(1,2,12),
-        Triple(1,4,21),
-        Triple(3,0,10),
-        Triple(2,1,12),
-        Triple(2,4,26),
-        Triple(3,2,17),
-        Triple(3,4,15),
-        Triple(4,1,21),
-        Triple(4,3,15),
-        Triple(4,2,26),
+        Edge(0, 1, 45),
+        Edge(0, 2, 28),
+        Edge(0, 3, 10),
+        Edge(1, 0, 45),
+        Edge(2, 0, 28),
+        Edge(1, 2, 12),
+        Edge(1, 4, 21),
+        Edge(3, 0, 10),
+        Edge(2, 1, 12),
+        Edge(2, 4, 26),
+        Edge(3, 2, 17),
+        Edge(3, 4, 15),
+        Edge(4, 1, 21),
+        Edge(4, 3, 15),
+        Edge(4, 2, 26),
     ]
     lm = LinkedMatrix(5, 5, elems)
     lm.print_matrix()
