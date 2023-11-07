@@ -13,6 +13,8 @@ class Vertex(object):
         self.name = name
         # vertex as activity
         self.dur = None
+        self.in_degree = 0
+        self.out_degree = 0
 
     def __str__(self):
         return f"vertex:{self.index}, v_name:{self.name}"

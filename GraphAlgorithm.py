@@ -4,10 +4,10 @@
 # @Author: ZhaoKe
 # @File : GraphAlgorithm.py
 # @Software: PyCharm
-from datastructures.ActivityGraph import AOV
+from datastructures.ActivityGraph import AOV, AOE
 from datastructures.graph_entities import Vertex, Edge
 
-if __name__ == '__main__':
+def AOV_example():
     # source 0, sink 8
     indices = set()
     edges = []
@@ -35,3 +35,31 @@ if __name__ == '__main__':
     for topo in all_topo_orders:
         print([ver.index for ver in topo])
         # print(graph.check_path([ver.index for ver in topo]))
+
+def AOE_example():
+    # source 0, sink 8
+    indices = set()
+    edges = []
+    with open("datasets/graph_example/dag3.txt") as fi:
+        line = fi.readline()
+        while line:
+            parts = line.strip().split(',')
+            indices.add(int(parts[0]))
+            indices.add(int(parts[1]))
+            edges.append(Edge(int(parts[0]), int(parts[1]), int(parts[2])))
+            line = fi.readline()
+    vertices1 = [Vertex(i, chr(65 + i)) for i in indices]
+    aoe_dag = AOE(vertices1, edges)
+
+    for edge in edges:
+        print(f"{edge.pre_v},{edge.post_v},{edge.weight}")
+    topo_list = aoe_dag.topological_sort()
+    # print([ver.index for ver in topo_list])
+    print('----critical path----')
+    cp = aoe_dag.critical_path()
+    print(",".join([str(item) for item in cp]))
+
+
+if __name__ == '__main__':
+    AOE_example()
+    # print(list(range(9, 0, -1)))
