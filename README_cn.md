@@ -50,9 +50,10 @@ utils/*.py: 工具类[README.md](README.md)
 - ./datasets/graph_example/*.txt
 
 ### 拓扑排序
-ActivityGraph.py 实现了AOV(Activity on Vertex)模型，并且提供了两个功能：
-- topological_sort_all(self)：对图进行拓扑排序
-- def check_path(self, path)：给定数组，判断是否是拓扑序（还没实现子序列）
+ActivityGraph.py 实现了AOV(Activity on Vertex)和AOE(Activity on Edge)模型，并且提供了一下功能：
+- AOV.topological_sort_all(self)：对图进行拓扑排序
+- AOV.check_path(self, path)：给定数组，判断是否是拓扑序（还没实现子序列）
+- AOE.critical_path(self): 找出关键路径
 
 
 #### Reference
