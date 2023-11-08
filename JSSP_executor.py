@@ -5,8 +5,11 @@
 # @File : JSSP_executor.py
 # @Software: PyCharm
 from utils.jsp_reader import JSPData
-from appkits.jsp_model import JSSP_Optimizer
+from appkits.jsp_model import JSPSolutionGenerator
 
 if __name__ == '__main__':
     data = JSPData("./datasets/fjsp_sets/brandimarte_mk01.txt")
-    optimizer = JSSP_Optimizer(data=data)
+    gene = JSPSolutionGenerator(data)
+    new_so = gene.init_solution()
+    print(new_so)
+    # optimizer = JSSP_Optimizer(data=data)

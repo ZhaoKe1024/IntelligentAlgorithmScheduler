@@ -14,6 +14,11 @@ import numpy as np
 
 class Data(ABC):
     def __init__(self):
+        self.total_number_jobs = 0
+        self.total_number_machines = 0
+        self.total_number_tasks = 0  # 文件第一列的和，所有工序数， Task就是工序
+        self.max_tasks_per_job = 0  # 所有工件中，最多的工序数
+        self.machine_speeds = None
         self.jobs = []
         self.job_task_index_matrix = None
         self.task_processing_times_matrix = None
@@ -25,6 +30,41 @@ class Data(ABC):
 
     def get_runtime(self, job_id, task_id, machine):
         return self.task_processing_times_matrix[self.job_task_index_matrix[job_id, task_id], machine]
+
+    def __str__(self):
+        result = "----------------\n" \
+                 f"total jobs = {self.total_number_jobs}\n" \
+                 f"total tasks = {self.total_number_tasks}\n" \
+                 f"total machines = {self.total_number_machines}\n" \
+                 f"max tasks for a job = {self.max_tasks_per_job}\n" \
+                 f"tasks:\n" \
+                 f"[jobId, taskId, sequence, usable_machines, pieces]\n"
+
+        for job in self.jobs:
+            for task in job.tasks:
+                result += str(task) + '\n'
+
+        if self.sequence_dependency_matrix is not None:
+            result += f"sequence_dependency_matrix: {self.sequence_dependency_matrix.shape}\n\n" \
+                      f"{self.sequence_dependency_matrix}\n\n"
+
+        if self.job_task_index_matrix is not None:
+            result += f"dependency_matrix_index_encoding: {self.job_task_index_matrix.shape}\n\n" \
+                      f"{self.job_task_index_matrix}\n\n"
+
+        if self.usable_machines_matrix is not None:
+            result += f"usable_machines_matrix: {self.usable_machines_matrix.shape}\n\n" \
+                      f"{self.usable_machines_matrix}\n\n"
+
+        if self.task_processing_times_matrix is not None:
+            result += f"task_processing_times: {self.task_processing_times_matrix.shape}\n\n" \
+                      f"{self.task_processing_times_matrix}\n\n"
+
+        if self.machine_speeds is not None:
+            result += f"machine_speeds: {self.machine_speeds.shape}\n\n" \
+                      f"{self.machine_speeds}"
+
+        return result
 
 
 class JSPData(Data):
