@@ -13,7 +13,7 @@ import random
 
 import numpy as np
 
-from utils.jsp_reader import JSPData
+from utils.jsp_reader import JSPData, SpreadsheetData
 
 
 class JSSP_Optimizer(object):
@@ -62,6 +62,19 @@ class JSPSolutionGenerator(object):
             rand_task = random.choice(available[rand_job_id])  # 工序
             rand_machine = np.random.choice(rand_task.usable_machines)  # 机器
             # 执行时间将从映射表查询
+
+            if isinstance(self.jsp_data_object, SpreadsheetData):
+                while last_task_scheduled_on_machine[rand_machine] is not None \
+                        and last_task_scheduled_on_machine[rand_machine].job_id == rand_job_id \
+                        and last_task_scheduled_on_machine[rand_machine].sequence + 1 < rand_task.get_sequence():
+
+                    rand_job_id = random.choice(list(available.keys()))
+                    rand_task = random.choice(available[rand_job_id])
+                    rand_machine = np.random.choice(rand_task.get_usable_machines())
+                    get_unstuck += 1
+                    if get_unstuck > 50:
+                        return self.init_solution()  # TODO this is not the best way to do this...
+
 
             available[rand_job_id].remove(rand_task)
             if len(available[rand_job_id]) == 0:

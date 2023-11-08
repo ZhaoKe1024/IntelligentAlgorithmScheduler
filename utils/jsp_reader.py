@@ -67,6 +67,40 @@ class Data(ABC):
         return result
 
 
+class SpreadsheetData(Data):
+    """
+    JSSP instance data class for spreadsheet data.
+
+    :type seq_dep_matrix: Path | str | Dataframe
+    :param seq_dep_matrix: path to the csv or xlsx file or a Dataframe containing the sequence dependency setup times
+
+    :type machine_speeds: Path | str | Dataframe
+    :param machine_speeds: path to the csv or xlsx file or a Dataframe containing all of the machine speeds
+
+    :type job_tasks: Path | str | Dataframe
+    :param job_tasks: path to the csv or xlsx file or a Dataframe containing all of the job-tasks
+
+    :returns: None
+    """
+    def __init__(self):
+        """
+        Initializes all of the static data from the csv files.
+
+        :type seq_dep_matrix: Path | str | Dataframe
+        :param seq_dep_matrix: path to the csv or xlsx file or a Dataframe containing the sequence dependency setup times.
+        If this param is None, then it is assumed that all setup times are 0 minutes.
+
+        :type machine_speeds: Path | str | Dataframe
+        :param machine_speeds: path to the csv or xlsx file or a Dataframe containing all of the machine speeds
+
+        :type job_tasks: Path | str | Dataframe
+        :param job_tasks: path to the csv or xlsx file or a Dataframe containing all of the job-tasks
+
+        :returns: None
+        """
+        super().__init__()
+
+
 class JSPData(Data):
     def __init__(self, row_list):
         super().__init__()
