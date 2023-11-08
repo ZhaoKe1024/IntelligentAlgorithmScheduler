@@ -4,7 +4,10 @@
 # @Author: ZhaoKe
 # @File : jsp_reader.py
 # @Software: PyCharm
-"""Flexible Job-Shop Scheduling Problem"""
+"""
+Data Structure for Flexible Job-Shop Scheduling Problem.
+The difficulty of this program lies in the Design of the Data Structure.
+"""
 from abc import ABC
 import numpy as np
 
@@ -41,6 +44,8 @@ class JSPData(Data):
                 num_tasks = line[0]
                 self.total_number_tasks += num_tasks
                 self.max_tasks_per_job = max(num_tasks, self.max_tasks_per_job)
+
+            # 工序i在机器j上的执行时间value
 
             self.task_processing_times_matrix = np.full((self.total_number_tasks, self.total_number_machines), -1, dtype=np.float32)
             self.sequence_dependency_matrix = np.zeros((self.total_number_tasks, self.total_number_tasks),

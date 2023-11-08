@@ -57,3 +57,4 @@ ActivityGraph.py : Implementing the AOV(Activity on Vertex) and AOE(Activity on 
 1. Holland J.(1992). [Genetic Algorithm](https://doi.org/10.1038/scientificamerican0792-66)
 2. Kennedy J, Eberhart R.(1995). Particle Swarm Optimization 
 3. Ke Zhao.(2021). [Research on Edge Cloud Load Balancing Strategy based on Chaotic Hierarchical Gene Replication](https://www.fujipress.jp/jaciii/jc/jacii002600050758/)
+4. [Job_Shop_Schedule_Problem](https://github.com/mcfadd/Job_Shop_Schedule_Problem)
