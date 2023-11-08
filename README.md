@@ -5,6 +5,8 @@
 ### Introduction
 This project is dedicated to solving cloud computing scheduling problems using intelligent algorithms. It can replace evaluation functions, plot and store results and charts. It should be noted that all are discrete scheduling problems, which means that all particle swarm optimization algorithms are discrete particle swarm optimization algorithms.
 
+In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem are developing.
+
 ### Code Structureh
 
 - simulate.py: The code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
