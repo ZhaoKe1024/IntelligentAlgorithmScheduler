@@ -2,7 +2,7 @@
 # -*- coding: utf_8 -*-
 # @Time : 2023/11/8 12:01
 # @Author: ZhaoKe
-# @File : jsp_model.py
+# @File : fjsp_model.py
 # @Software: PyCharm
 """
 JSSP Job Shop Scheduling Problem

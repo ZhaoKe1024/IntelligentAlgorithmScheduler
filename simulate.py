@@ -11,8 +11,8 @@ from utils.Entities import VM, Cloudlet
 
 
 def main(use_data, use_algorithm):
-    vm_list_path = f"./datasets/vm_list_{use_data}.txt"
-    task_list_path = f"./datasets/task_list_{use_data}.txt"
+    vm_list_path = f"./datasets/cloud_schedule/vm_list_{use_data}.txt"
+    task_list_path = f"./datasets/cloud_schedule/task_list_{use_data}.txt"
     vm_params = ["vm_id", "cpu_supply", "cpu_velocity", "mem_supply", "mem_capacity",
                  "hd_supply", "hd_capacity", "bw_supply", "bw_capacity"]
     # lets_params = ["cpu_demand", "mem_demand", "hd_demand", "bw_demand"]
@@ -65,7 +65,7 @@ def main(use_data, use_algorithm):
 
 
 def run():
-    use_algorithm = "DPSO"
+    use_algorithm = "GA"
     use_data = 1
     main(use_data, use_algorithm)
 

@@ -3,16 +3,7 @@
 # @Time : 2021-03-21 10:43
 import numpy as np
 from utils.Entities import calculate_fitness
-
-
-class Gene:
-    def __init__(self):
-        """
-        @solution: the solution vector, 1dim
-        fitness: a scalar value
-        """
-        self.solution = None
-        self.fitness = None
+from appkits.solution_struct import SimpleSolution, SimpleSolutionGenerator
 
 
 class GAScheduler:
@@ -32,13 +23,13 @@ class GAScheduler:
         self.best_gene = None
 
         self.genes = list()
+        self.so_generator = SimpleSolutionGenerator(self.cloudlet_num, self.machine_number)
 
     # 初始化群体
     def init_population(self):
         for i in range(self.population_number):
-            gene = Gene()
-            gene.solution = np.random.randint(0, self.machine_number, self.cloudlet_num)
-            gene.fitness = calculate_fitness(gene.solution, self.cloudlets, self.vms)
+            gene = self.so_generator.initialize_solution()
+            gene.set_fitness(calculate_fitness(gene.solution, self.cloudlets, self.vms))
             self.genes.append(gene)
 
     # 轮盘赌选取一个
@@ -67,7 +58,7 @@ class GAScheduler:
         for i in range(self.population_number):
             if np.random.rand() < self.cp:
                 point = np.random.randint(0, self.cloudlet_num)
-                new_gene = Gene()
+                new_gene = SimpleSolution()
                 new_gene.solution = np.hstack((g1.solution[0:point], g2.solution[point:]))
                 new_gene.fitness = calculate_fitness(new_gene.solution, self.cloudlets, self.vms)
                 self.genes[i] = new_gene
@@ -81,7 +72,7 @@ class GAScheduler:
                 self.genes[i].fitness = calculate_fitness(self.genes[i].solution, self.cloudlets, self.vms)
 
     # 选择群体最优个体
-    def select_best(self) -> Gene:
+    def select_best(self) -> SimpleSolution:
         best = self.genes[0]
         for g in self.genes:
             if best.fitness < g.fitness:

@@ -5,7 +5,7 @@
 # @File : JSSP_executor.py
 # @Software: PyCharm
 from utils.jsp_reader import JSPData
-from appkits.jsp_model import JSPSolutionGenerator
+from appkits.fjsp_model import JSPSolutionGenerator
 
 if __name__ == '__main__':
     data = JSPData("./datasets/fjsp_sets/brandimarte_mk01.txt")
