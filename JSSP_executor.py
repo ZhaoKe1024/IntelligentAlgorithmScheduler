@@ -42,6 +42,11 @@ class Task(object):
             self.selected_machine = np.random.randint(len(self.target_machine))
         return self.target_machine[self.selected_machine], self.execute_time[self.selected_machine]
 
+    def get_rand_machine(self):
+        i = np.random.randint(len(self.target_machine))
+        self.selected_machine = i
+        return self.target_machine[i], self.execute_time[i]
+
     def __str__(self):
         return f"Task{self.global_index}"
 
@@ -72,22 +77,41 @@ class Job(object):
         return f"Jid: {self.job_id}: [" + ", ".join([str(i) for i in self.task_list]) + ']'
 
 
-def generate_new_solution(jobs, machine_num):
-    jobs_tmp = jobs.copy()
+def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mode=None):
     res = [Machine(i) for i in range(machine_num)]
+    jobs_tmp = jobs.copy()
     # print(len(res))
-    while len(jobs_tmp) > 0:
-        for i in range(len(jobs_tmp)):
-            # print(len(jobs_tmp))
-            select_job_index = np.random.randint(len(jobs_tmp))
-            # print(select_job_index)
-            if jobs_tmp[select_job_index].is_finished():
-                jobs_tmp.pop(select_job_index)
-            else:
-                first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
-                target_machine, _ = first_task_this_job.get_target_machine()
-                # print("machine id:", target_machine)
-                res[target_machine].add_task(first_task_this_job)
+    if mode == 0:
+        # 随机初始化
+        while len(jobs_tmp) > 0:
+            for i in range(len(jobs_tmp)):
+                # print(len(jobs_tmp))
+                select_job_index = np.random.randint(len(jobs_tmp))
+                # print(select_job_index)
+                if jobs_tmp[select_job_index].is_finished():
+                    jobs_tmp.pop(select_job_index)
+                else:
+                    first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
+                    target_machine, _ = first_task_this_job.get_target_machine()
+                    # print("machine id:", target_machine)
+                    res[target_machine].add_task(first_task_this_job)
+    elif mode == 1:
+        # 交叉
+        pass
+    elif mode == 2:
+        # 变异
+        i = np.random.randint(len(jobs))
+        rand_job = jobs[i]
+        i = np.random.randint(len(rand_job.task_list))
+        rand_task = rand_job.task_list[i].copy()
+        rand_task.get_rand_machine()
+        pass
+    elif mode == 3:
+        # 片段倒置
+        pass
+    elif mode == 4:
+        # 片段互换位置
+        pass
     return res
 
 
@@ -119,7 +143,7 @@ def run():
                 tmp_task = Task(task_cnt, job_id)
                 task_cnt += 1
                 for i in range(part_index + 1, part_index + 2 * parts[part_index] + 1, 2):
-                    tmp_task.add_alternate_machine(parts[i]-1, parts[i + 1])
+                    tmp_task.add_alternate_machine(parts[i] - 1, parts[i + 1])
                 part_index = part_index + 2 * parts[part_index] + 1
                 jobs[job_id].add_task(tmp_task)
             job_id += 1
@@ -130,7 +154,9 @@ def run():
 
     for j in jobs:
         print(j)
-
+    # 得到的是[job1, job2, ..., jobn]
+    # jobi=[task1, task2, ..., taskn]
+    # task=[mid, time]
     solution = generate_new_solution(jobs, machine_num)
     for m in solution:
         print(m)
