@@ -7,6 +7,7 @@
 import numpy as np
 
 
+# 加工设备
 class Machine(object):
     def __init__(self, machine_id):
         self.machine_id = machine_id
@@ -22,17 +23,30 @@ class Machine(object):
         return f"Mid: {self.machine_id}: [" + ", ".join([str(i) for i in self.task_list]) + ']'
 
 
+# 工序
 class Task(object):
-    def __init__(self, target_machine, execute_time, parent_job, global_index):
-        self.target_machine = target_machine
-        self.execute_time = execute_time
+    def __init__(self, global_index, parent_job):
         self.parent_job = parent_job
         self.global_index = global_index
+        # 可选机器和时间
+        self.target_machine = []
+        self.execute_time = []
+        self.selected_machine = None
+
+    def add_alternate_machine(self, machine_id, a_time):
+        self.target_machine.append(machine_id)
+        self.execute_time.append(a_time)
+
+    def get_target_machine(self):
+        if not self.selected_machine:
+            self.selected_machine = np.random.randint(len(self.target_machine))
+        return self.target_machine[self.selected_machine], self.execute_time[self.selected_machine]
 
     def __str__(self):
         return f"Task{self.global_index}"
 
 
+# 工件
 class Job(object):
     def __init__(self, job_id):
         self.job_id = job_id
@@ -61,37 +75,59 @@ class Job(object):
 def generate_new_solution(jobs, machine_num):
     jobs_tmp = jobs.copy()
     res = [Machine(i) for i in range(machine_num)]
+    # print(len(res))
     while len(jobs_tmp) > 0:
         for i in range(len(jobs_tmp)):
+            # print(len(jobs_tmp))
             select_job_index = np.random.randint(len(jobs_tmp))
+            # print(select_job_index)
             if jobs_tmp[select_job_index].is_finished():
                 jobs_tmp.pop(select_job_index)
             else:
                 first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
-                res[first_task_this_job.target_machine].add_task(first_task_this_job)
+                target_machine, _ = first_task_this_job.get_target_machine()
+                # print("machine id:", target_machine)
+                res[target_machine].add_task(first_task_this_job)
     return res
 
 
 def calculate_sum_load(machines):
     res = []
     for machine in machines:
-        time_load = sum([task.execute_time for task in machine.task_list])
+        time_load = 0
+        for task in machine.task_list:
+            _, e_time = task.get_target_machine()
+            time_load += e_time
         res.append(time_load)
     return res
 
 
 def run():
-    job_num = 4
-    machine_num = 4
-    job_mask = [1, 1, 1, 2, 2, 3, 3, 4, 4]
-    task_machine_map = [1, 4, 1, 4, 2, 4, 2, 3, 3]
-    task_machine_time = [2, 5, 8, 7, 6, 11, 13, 1, 5]
-    jobs = [Job(i) for i in range(job_num)]
+    with open("./datasets/fjsp_sets/brandimarte_mk01.txt") as fin:
+        first_line = fin.readline().strip().split(' ')
+        job_num = int(first_line[0])
+        machine_num = int(first_line[1])
+
+        job_id = 0
+        task_cnt = 0
+        line = fin.readline()
+        jobs = [Job(i) for i in range(job_num)]
+        while line:
+            parts = [int(s) for s in line.strip().split(' ')]
+            part_index = 1
+            while part_index < len(parts):
+                tmp_task = Task(task_cnt, job_id)
+                task_cnt += 1
+                for i in range(part_index + 1, part_index + 2 * parts[part_index] + 1, 2):
+                    tmp_task.add_alternate_machine(parts[i]-1, parts[i + 1])
+                part_index = part_index + 2 * parts[part_index] + 1
+                jobs[job_id].add_task(tmp_task)
+            job_id += 1
+            line = fin.readline()
+
     # 因为一个工件的多个工序之间有先后之分，需要以有序的部分做一个矩阵，序号就是列，先求出最大工序数
-    # max_sequence_num = 0
-    for j, job_index in enumerate(job_mask):
-        jobs[job_index - 1].add_task(Task(task_machine_map[j]-1, task_machine_time[j], job_index - 1, j))
     # print("最大工序数：", max_sequence_num)
+
     for j in jobs:
         print(j)
 
@@ -103,9 +139,4 @@ def run():
 
 
 if __name__ == '__main__':
-    # data = JSPData("./datasets/fjsp_sets/brandimarte_mk01.txt")
-    # gene = JSPSolutionGenerator(data)
-    # new_so = gene.init_solution()
-    # print(new_so)
-    # optimizer = JSSP_Optimizer(data=data)
     run()
