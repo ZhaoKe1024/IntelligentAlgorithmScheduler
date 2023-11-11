@@ -160,11 +160,19 @@ def run():
     # 得到的是[job1, job2, ..., jobn]
     # jobi=[task1, task2, ..., taskn]
     # task=[mid, time]
-    solution = generate_new_solution(jobs, machine_num)
+    solution = generate_new_solution(jobs=jobs, machine_num=machine_num, mode=0)
     for m in solution:
         print(m)
     # print(str(solution))
-    print(calculate_sum_load(solution))
+    res = calculate_sum_load(solution)
+    print("每个机器的完工时间：", res)
+    print(f"最短完工时间：{max(res)}")
+    mutation_solution1 = generate_new_solution(jobs=jobs, machine_num=machine_num, solution1=solution, mode=2)
+    for m in mutation_solution1:
+        print(m)
+    res = calculate_sum_load(mutation_solution1)
+    print("每个机器的完工时间：", res)
+    print(f"最短完工时间：{max(res)}")
 
 
 if __name__ == '__main__':
