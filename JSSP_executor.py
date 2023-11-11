@@ -99,13 +99,16 @@ def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mod
         # 交叉
         pass
     elif mode == 2:
-        # 变异
+        # 变异  改变一个随机的job的随机task的machine选择
         i = np.random.randint(len(jobs))
         rand_job = jobs[i]
         i = np.random.randint(len(rand_job.task_list))
         rand_task = rand_job.task_list[i].copy()
         rand_task.get_rand_machine()
-        pass
+        selected_machine_list = solution1[rand_task.selected_machine].task_list
+        selected_machine_list[np.random.randint(len(selected_machine_list))] = rand_task
+        solution1[rand_task.selected_machine] = selected_machine_list
+        res = solution1
     elif mode == 3:
         # 片段倒置
         pass
