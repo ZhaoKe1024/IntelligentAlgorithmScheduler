@@ -1,14 +1,18 @@
 [Endlish](README.md)|[简体中文](README_cn.md)
 
-# IntelligentAlgorithm-CloudScheduler
+# Intelligent Algorithm Scheduler
 
-### Introduction
-This project is dedicated to solving cloud computing scheduling problems using intelligent algorithms. It can replace evaluation functions, plot and store results and charts. It should be noted that all are discrete scheduling problems, which means that all particle swarm optimization algorithms are discrete particle swarm optimization algorithms.
+# Introduction
+This repository provides two models currently.
 
+1. This project is dedicated to solving cloud computing scheduling problems using intelligent algorithms. It can replace evaluation functions, plot and store results and charts. It should be noted that all are discrete scheduling problems, which means that all particle swarm optimization algorithms are discrete particle swarm optimization algorithms.
 In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem are developing.
 
-### Code Structureh
+2. Solving FJSP using Intelligent Algorithm, and draw gantt plot.
 
+
+# Code Structure
+- appkits: FJSP Model
 - simulate.py: The code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
 - SchedulerScaleandFitness.py: This file is used to compare the optimal solutions of multiple algorithms and their convergence curves.
 - Schedulers.py: Similar to the above, it includes comparative experiments for different groups.

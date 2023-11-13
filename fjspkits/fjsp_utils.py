@@ -6,7 +6,7 @@
 # @Software: PyCharm
 import copy
 import numpy as np
-from appkits.fjsp_entities import Machine
+from fjspkits.fjsp_entities import Machine
 
 
 def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mode=None):

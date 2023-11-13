@@ -24,8 +24,8 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.patches import Patch
 
-from appkits.fjsp_entities import Job, Task
-from appkits.fjsp_utils import generate_new_solution, calculate_sum_load
+from fjspkits.fjsp_entities import Job, Task
+from fjspkits.fjsp_utils import generate_new_solution, calculate_sum_load
 
 
 def run():
@@ -61,7 +61,7 @@ def run():
     # 得到的是[job1, job2, ..., jobn]
     # jobi=[task1, task2, ..., taskn]
     # task=[mid, time]
-    # 初始化，还有优化空间，尽可能产生一个好的初始解
+    # 【初始化，还有优化空间，尽可能产生一个好的初始解】
     solution = generate_new_solution(jobs=jobs, machine_num=machine_num, mode=0)
     for m in solution:
         print(m)
@@ -83,9 +83,10 @@ def run():
     # print(f"最短完工时间：{max(res)}")
     print(f"最大Task数: {task_cnt}")
     # 根据machines得到一个pandas用于绘图
-    data_dict = {"Task": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
+    data_dict = {"Task": {}, "Machine":{},  "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
     for machine in aligned_machines:
         for task in machine.task_list:
+            data_dict["Machine"][task.global_index] = "M"+str(task.selected_machine)
             data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
             data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
             data_dict["start_num"][task.global_index] = task.start_time
@@ -115,12 +116,13 @@ def run():
     # fig, ax = plt.subplots(1, figsize=(16, 6))
     fig, (ax, ax1) = plt.subplots(2, figsize=(16, 6), gridspec_kw={'height_ratios': [6, 1]})
     # ax.barh(df.Task, df.current_num, left=df.start_num, color=df.color)
-    ax.barh(df.Task, df.days_start_to_end, left=df.start_num, color=df.color, alpha=0.5)
+    ax.barh(df.Machine, df.days_start_to_end, left=df.start_num, color=df.color, alpha=0.7)
+    ax.set_yticks(range(machine_num), ["Machine"+str(i) for i in range(machine_num)])
 
     # texts
     for idx, row in df.iterrows():
         # ax.text(row.end_num + 0.1, idx, f"{int(row.Completion * 100)}%", va='center', alpha=0.8)
-        ax.text(row.start_num - 0.1, idx, row.Task, va='center', ha='right', alpha=0.8)
+        ax.text(row.start_num+0.1, row.Machine, row.Task, fontsize=10, va='center', ha='right', alpha=0.8)
 
     # grid lines
     ax.set_axisbelow(True)
@@ -134,7 +136,6 @@ def run():
     ax.set_xticks(xticks)
     ax.set_xticks(xticks_minor, minor=True)
     # ax.set_xticklabels(xticks_labels[::3])
-    ax.set_yticks([])
 
     # ticks top
     # create a new axis with the same y
@@ -169,7 +170,7 @@ def run():
     ax_top.spines['left'].set_visible(False)
     ax_top.spines['top'].set_visible(False)
 
-    plt.suptitle('PROJECT XYZ')
+    plt.suptitle('FJSP Allocate Result Gantt')
 
     ##### LEGENDS #####
     legend_elements = [Patch(facecolor='#E64646', label='Marketing'),

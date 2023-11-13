@@ -1,13 +1,15 @@
 [Endlish](README.md)|[简体中文](README_cn.md)
 
-# IntelligentAlgorithm-CloudScheduler
+# Intelligent Algorithm Scheduler
 
 #### 介绍
-用智能算法解决云计算调度类问题，可以更换评价函数、绘图并存储结果和图表，需要注意的是，全都是离散调度问题，也就是说所有粒子群都是离散粒子群算法。
+本仓库目前提供两种模型：
+1. 用智能算法解决云计算调度类问题，可以更换评价函数、绘图并存储结果和图表，需要注意的是，全都是离散调度问题，也就是说所有粒子群都是离散粒子群算法。
 另外正在实现图上的优化算法，以及柔性车间任务调度问题。
+2. 用智能算法解决FJSP问题。并绘制甘特图。
 
 #### 代码结构
-
+- appkits: FJSP 问题。
 - simulate.py: 运行得到结果，可以在其中更换算法、数据、参数等
 - SchedulerScaleandFitness.py: 多个算法对比最优解以及收敛曲线
 - Schedulers.py: 同上，不同组别对比实验
