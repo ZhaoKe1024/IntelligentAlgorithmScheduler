@@ -26,6 +26,7 @@ from matplotlib.patches import Patch
 
 from fjspkits.fjsp_entities import Job, Task
 from fjspkits.fjsp_utils import generate_new_solution, calculate_sum_load
+from utils.plottools import plot_gantt
 
 
 def run():
@@ -102,94 +103,7 @@ def run():
     # days between start and end of each task
     # df['days_start_to_end'] = df.end_num - df.start_num
     # df['current_num'] = (df.days_start_to_end * df.Completion)
-
-    def color(row):
-        rgb_number = ["#FF0000", "#FFD700", "#FFFF00", "#7CFC00", "#008000", "#00FFFF",
-                      "#0000FF", "#6A5ACD", "#800080", "#696969", "#800000", "#D3D3D3"]
-        c_dict = {}
-        for i, rgb in enumerate(rgb_number):
-            c_dict["Job" + str(i)] = rgb
-        return c_dict[row['Job']]
-
-    df['color'] = df.apply(color, axis=1)
-
-    # fig, ax = plt.subplots(1, figsize=(16, 6))
-    fig, (ax, ax1) = plt.subplots(2, figsize=(16, 6), gridspec_kw={'height_ratios': [6, 1]})
-    # ax.barh(df.Task, df.current_num, left=df.start_num, color=df.color)
-    ax.barh(df.Machine, df.days_start_to_end, left=df.start_num, color=df.color, alpha=0.7)
-    ax.set_yticks(range(machine_num), ["Machine"+str(i) for i in range(machine_num)])
-
-    # texts
-    for idx, row in df.iterrows():
-        # ax.text(row.end_num + 0.1, idx, f"{int(row.Completion * 100)}%", va='center', alpha=0.8)
-        ax.text(row.start_num+0.1, row.Machine, row.Task, fontsize=10, va='center', ha='right', alpha=0.8)
-
-    # grid lines
-    ax.set_axisbelow(True)
-    ax.xaxis.grid(color='gray', linestyle='dashed', alpha=0.2, which='both')
-
-    # ticks
-    xticks = np.arange(0, df.end_num.max() + 1, 3)
-    # xticks_labels = pd.date_range(proj_start, end=df.End.max()).strftime("%m/%d")
-    xticks_labels = pd.date_range(0, end=df.end_num.max()).strftime("%m/%d")
-    xticks_minor = np.arange(0, df.end_num.max() + 1, 1)
-    ax.set_xticks(xticks)
-    ax.set_xticks(xticks_minor, minor=True)
-    # ax.set_xticklabels(xticks_labels[::3])
-
-    # ticks top
-    # create a new axis with the same y
-    ax_top = ax.twiny()
-
-    # align x axis
-    ax.set_xlim(0, df.end_num.max())
-    ax_top.set_xlim(0, df.end_num.max())
-
-    # top ticks (markings)
-    xticks_top_minor = np.arange(0, df.end_num.max() + 1, 7)
-    ax_top.set_xticks(xticks_top_minor, minor=True)
-    # top ticks (label)
-    xticks_top_major = np.arange(3.5, df.end_num.max() + 1, 7)
-    ax_top.set_xticks(xticks_top_major, minor=False)
-    # week labels
-    xticks_top_labels = [f"Week {i}" for i in np.arange(1, len(xticks_top_major) + 1, 1)]
-    ax_top.set_xticklabels(xticks_top_labels, ha='center', minor=False)
-
-    # hide major tick (we only want the label)
-    ax_top.tick_params(which='major', color='w')
-    # increase minor ticks (to marks the weeks start and end)
-    ax_top.tick_params(which='minor', length=8, color='k')
-
-    # remove spines
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.spines['left'].set_position(('outward', 10))
-    ax.spines['top'].set_visible(False)
-
-    ax_top.spines['right'].set_visible(False)
-    ax_top.spines['left'].set_visible(False)
-    ax_top.spines['top'].set_visible(False)
-
-    plt.suptitle('FJSP Allocate Result Gantt')
-
-    ##### LEGENDS #####
-    legend_elements = [Patch(facecolor='#E64646', label='Marketing'),
-                       Patch(facecolor='#E69646', label='Finance'),
-                       Patch(facecolor='#34D05C', label='Engineering'),
-                       Patch(facecolor='#34D0C3', label='Production'),
-                       Patch(facecolor='#3475D0', label='IT')]
-
-    ax1.legend(handles=legend_elements, loc='upper center', ncol=5, frameon=False)
-
-    # clean second axis
-    ax1.spines['right'].set_visible(False)
-    ax1.spines['left'].set_visible(False)
-    ax1.spines['top'].set_visible(False)
-    ax1.spines['bottom'].set_visible(False)
-    ax1.set_xticks([])
-    ax1.set_yticks([])
-
-    plt.show()
+    plot_gantt(df, machine_num)
 
 
 if __name__ == '__main__':
