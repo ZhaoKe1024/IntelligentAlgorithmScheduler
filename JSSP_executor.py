@@ -7,6 +7,7 @@
 # @version: 0.0.1
 """
 这是正在开发中的一个FJSP柔性车间调度模型的遗传算法框架，的最初版本，一个文件包含全部
+
 一个车间有m个Machine，有n个job，每个job有多个task，每个task有多个可以选择的机器，执行时间各不相同。
 每个job的多个task之间有顺序约束，不同job之间没有依赖关系。
 目标：把所有task分配到m个Machine上，满足job的顺序约束，最小化执行时间。
@@ -193,26 +194,41 @@ def calculate_sum_load(machines, return_align_result=False, job_num=10):
                 cur_task = machine.task_list[j]  # 只读变量，不用于被赋值
                 # 当前task可以执行的条件：job执行到的工序，就是当前task的工序号
                 if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
+                    # print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
                     j_machine, j_time = cur_task.get_target_machine()  # 获取当前task的所在机器和所需时间
-                    if cur_task.injob_index == 0:
-                        machine.task_list[j].start_time = 0
-                        machine.task_list[j].finish_time = j_time
+                    start_t = None
+                    end_t = None
+                    if j == 0:
+                        if cur_task.injob_index == 0:
+                            start_t = 0
+                            end_t = j_time
+                            # print(f"allocated time 0: job[{cur_task.parent_job}] Task[{cur_task.injob_index}] start:{0} ,end:{j_time}")
+                        else:
+                            start_t = job_end_times_memory[cur_task.parent_job]
+                            end_t = job_end_times_memory[cur_task.parent_job] + j_time
                     else:
                         # 设置当前task开始时间 max(同工件上一个工序的结束时间，同机器前一个task结束时间)
                         # 和结束时间
                         # 考虑一下没有task_list[j-1]的情况
-                        if j == 0:
-                            machine.task_list[j].start_time = job_end_times_memory[cur_task.parent_job]
-                            machine.task_list[j].finish_time = machine.task_list[j].start_time + j_time
+                        if cur_task.injob_index == 0:
+                            # print(f"in this machine, last task is :", machine.task_list[j - 1], "its info is", machine.task_list[j - 1].start_time, machine.task_list[j - 1].finish_time)
+                            start_t = machine.task_list[j - 1].finish_time
+                            end_t = start_t + j_time
+                            # print(f"allocated time 1: job[{cur_task.parent_job}] Task[{cur_task.injob_index}] start:{start_t} ,end{end_t}")
                         else:
-                            machine.task_list[j].start_time = max(machine.task_list[j - 1].finish_time,
-                                                                  job_end_times_memory[cur_task.parent_job])
-                            machine.task_list[j].finish_time = machine.task_list[j].start_time + j_time
+                            # print(f"injob last task endtime:{job_end_times_memory[cur_task.parent_job]}, inmachine last task endtime:{machine.task_list[j - 1].finish_time}, its index {j - 1}")
+
+                            # print(f"in this machine, last task is :", machine.task_list[j - 1], "its info is", machine.task_list[j - 1].start_time, machine.task_list[j - 1].finish_time)
+                            start_t = max(machine.task_list[j - 1].finish_time, job_end_times_memory[cur_task.parent_job])
+                            end_t = start_t + j_time
+                            # print(f"allocated time 2: job[{cur_task.parent_job}] Task[{cur_task.injob_index}] start:{start_t} ,end{end_t}")
+                    machine.task_list[j].start_time = start_t
+                    machine.task_list[j].finish_time = end_t
                     # 表示当前job的下一个task可以执行了，不需要判断越界，因为machine已经约束
                     job_task_index_memory[cur_task.parent_job] += 1  # 当前job的下一个task能够执行了
                     # job_task_index_memory[cur_task.selected_machine] += 1  # 当前machine的下一个task能执行了
                     # 下一个task是否能执行？时间如何allocate？
-                    job_end_times_memory[cur_task.parent_job] += j_time
+                    job_end_times_memory[cur_task.parent_job] = machine.task_list[j].finish_time
                     machine_task_index_memory[i] += 1
                     # print("job task index memory:\n", job_task_index_memory)
                     # print("job end times memory:\n", job_end_times_memory)
