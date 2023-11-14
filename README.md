@@ -24,6 +24,8 @@ root
 │    └─GAScheduler.py, Genetic Algorithms to Cloud Service Scheduling.
 │    └─DPSOTaskScheduler.py, Particle Swarm Algorithms to simulating.
 │    └─SAScheduler.py, Simulating Anneal Algorithms to simulating.
+│    └─ACScheduler.py, Ant Colony Algorithms to simulating.
+│    └─TabooSearchScheduler.py, Taboo Search Algorithms to simulating.
 │    └─*.py, Support Algorithms to simulating.
 └─utils/
 │    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).

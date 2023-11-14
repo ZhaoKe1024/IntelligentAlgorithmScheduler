@@ -15,11 +15,32 @@ from utils.plottools import plot_gantt
 class Genetic4FJSP(object):
     def __init__(self, data_file):
         self.jobs, self.machine_num, self.task_num = read_Data_from_file(data_file)
+        self.population_number = 50
+        self.iter_steps = 100
 
     def schedule(self):
         for j in self.jobs:
             print(j)
+        print("============initialize solution 0===============")
         s0 = self.__init_solution()
+        best_gene = None
+        results = []
+
+        # 遗传算法迭代
+        for t in range(self.iter_steps):
+            print(f"---->steps {t}/{self.iter_steps}----")
+            pass
+            # --选择--交叉--变异--产生新解
+            # best_gene = self.natural_selection()
+            # gene_c1, gene_c2 = self.crossover()
+            # gene_m = self.mutation()
+
+            # current best
+            # local_best_gene = ?
+            # ----搜索当前代最好的
+            # ----更新全局最好的
+
+        print(results)
         for m in s0:
             print(m)
         print("---------------Key!-----------------")
@@ -31,6 +52,7 @@ class Genetic4FJSP(object):
                 print(f"[{task.start_time},{task.finish_time}]", end='|')
             print()
         print(f"最大Task数: {self.task_num}")
+        # ---------------------------Gantt Plot---------------------------------
         # 根据machines得到一个pandas用于绘图
         data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
         for machine in aligned_machines:
