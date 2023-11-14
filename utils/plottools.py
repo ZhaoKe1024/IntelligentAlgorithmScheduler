@@ -129,9 +129,9 @@ input:
 
 
 def plot_gantt(df, machine_num):
+    rgb_number = ["#FF0000", "#FFD700", "#FFFF00", "#7CFC00", "#008000", "#00FFFF",
+                  "#0000FF", "#6A5ACD", "#800080", "#696969", "#800000", "#D3D3D3"]
     def color(row):
-        rgb_number = ["#FF0000", "#FFD700", "#FFFF00", "#7CFC00", "#008000", "#00FFFF",
-                      "#0000FF", "#6A5ACD", "#800080", "#696969", "#800000", "#D3D3D3"]
         c_dict = {}
         for i, rgb in enumerate(rgb_number):
             c_dict["Job" + str(i)] = rgb
@@ -199,12 +199,9 @@ def plot_gantt(df, machine_num):
     plt.suptitle('FJSP Allocate Result Gantt')
 
     ##### LEGENDS #####
-    legend_elements = [Patch(facecolor='#E64646', label='Marketing'),
-                       Patch(facecolor='#E69646', label='Finance'),
-                       Patch(facecolor='#34D05C', label='Engineering'),
-                       Patch(facecolor='#34D0C3', label='Production'),
-                       Patch(facecolor='#3475D0', label='IT')]
-
+    legend_elements = []
+    for i, rgb in enumerate(rgb_number):
+        legend_elements.append(Patch(facecolor=rgb, label=f"Job{i}"))
     ax1.legend(handles=legend_elements, loc='upper center', ncol=5, frameon=False)
 
     # clean second axis

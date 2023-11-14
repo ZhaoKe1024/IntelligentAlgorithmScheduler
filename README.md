@@ -21,6 +21,9 @@ root
 │    └─FJSP_GAModel.py: flow of genetic algorithm for FJSP model.
 └─simulate.py: For Cloud Scheduling, This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
 └─schedulers/
+│    └─GAScheduler.py, Genetic Algorithms to Cloud Service Scheduling.
+│    └─DPSOTaskScheduler.py, Particle Swarm Algorithms to simulating.
+│    └─SAScheduler.py, Simulating Anneal Algorithms to simulating.
 │    └─*.py, Support Algorithms to simulating.
 └─utils/
 │    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).

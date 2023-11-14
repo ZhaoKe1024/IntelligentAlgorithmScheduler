@@ -58,7 +58,7 @@ class Genetic4FJSP(object):
                     jobs_tmp.pop(select_job_index)
                 else:
                     first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
-                    # 选择一个负载最低的，或者结束时间最短的（贪心算法初始化）
+                    # 在可选机器中，选一个时间结束最早的机器；或者另一种策略：在可选机器中，选一个用时最少的机器
                     target_machines = first_task_this_job.target_machine
                     target_m_idx = target_machines[0]
                     target_end_time = end_time_machines[target_m_idx]
