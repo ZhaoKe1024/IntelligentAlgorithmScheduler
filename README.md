@@ -12,17 +12,28 @@ In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem 
 
 
 # Code Structure
-- appkits: FJSP Model
-- simulate.py: The code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
-- SchedulerScaleandFitness.py: This file is used to compare the optimal solutions of multiple algorithms and their convergence curves.
-- Schedulers.py: Similar to the above, it includes comparative experiments for different groups.
-- chaosTest.py: Similar to the above, it includes comparative experiments for different groups.
+```
+root
+└─JSSP_executor.py
+└─fjspkits/
+│    └─fjsp_entities.py: Definition of Job, Task, Machine
+│    └─fjsp_utils.py: Definition of some functions such as: read_file, calculate execute time.
+│    └─FJSP_GAModel.py: flow of genetic algorithm for FJSP model.
+└─simulate.py: For Cloud Scheduling, This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
+└─schedulers/
+│    └─*.py, Support Algorithms to simulating.
+└─utils/
+│    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).
+│    └─plottools.py: some functions for plotting, such gantt plot.
+└─GraphAlgorithm.py: AOE and AOV algorithm, such as critical path, topological sorting.
+└─datastructure/
+│    └─ActivityGraph.py: Definition of AOE(activities on Edges) and AOV(activities on Vertices) Model.
+│    └─ *.py: Definitions of Entities or basic datastructures for Graph Model.
+└─SchedulerScaleandFitness.py: This file is used to compare the optimal solutions of multiple algorithms and their convergence curves.
+└─Schedulers.py: Similar to the above, it includes comparative experiments for different groups.
+└─chaosTest.py: Similar to the above, it includes comparative experiments for different groups.
+```
 
-utils.Entities : This file includes some entities that could tasks need.
-- Cloudlet: cloud tasks to allocated
-- VM: containers Virtual Machines to execute tasks(cloudlets)
-
-schedulers/*.py, Support Algorithms to simulating.
 Not every algorithm has a paper, as some are my own improvement attempts.
 - GA: Genetic Algorithm
 - SA: Simulated Annealing Algorithm
@@ -33,7 +44,6 @@ Not every algorithm has a paper, as some are my own improvement attempts.
 - CDPSO: Chaotic PSO
 - TSA: Taboo Search Algorithm
 - others
-
 
 - ChaosDPSO(DPSO based on Chaos)
 - ChaosHPSO(DPSO based on Chaos and hierarchical)

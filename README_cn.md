@@ -9,17 +9,28 @@
 2. 用智能算法解决FJSP问题。并绘制甘特图。
 
 #### 代码结构
-- appkits: FJSP 问题。
-- simulate.py: 运行得到结果，可以在其中更换算法、数据、参数等
-- SchedulerScaleandFitness.py: 多个算法对比最优解以及收敛曲线
-- Schedulers.py: 同上，不同组别对比实验
-- chaosTest.py: 同上，不同组别对比实验
+```
+root
+└─JSSP_executor.py
+└─fjspkits/
+│    └─fjsp_entities.py: Job, Task, Machine 的定义。
+│    └─fjsp_utils.py: read_file 通过文件读取生成数据, calculate execute time 计算每个机器的执行时间.
+│    └─FJSP_GAModel.py: FJSP model 工作流类.
+└─simulate.py: 用于云服务负载均衡调度的类 This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
+└─schedulers/
+│    └─*.py, 算法库.
+└─utils/
+│    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).
+│    └─plottools.py: 绘制甘特图
+└─GraphAlgorithm.py: AOE and AOV 算法，例如关键路径、拓扑排序.
+└─datastructure/
+│    └─ActivityGraph.py: Definition of AOE(activities on Edges) and AOV(activities on Vertices) Model.
+│    └─ *.py: 用于图模型的基础数据结构和实体类.
+└─SchedulerScaleandFitness.py: This file is used to compare the optimal solutions of multiple algorithms and their convergence curves.
+└─Schedulers.py: Similar to the above, it includes comparative experiments for different groups.
+└─chaosTest.py: Similar to the above, it includes comparative experiments for different groups.
+```
 
-utils.Entities 定义实体:
-- Cloudlet: 云任务 cloud tasks to allocated
-- VM: 虚拟机 Virtual Machines to execute tasks(cloudlets)
-
-schedulers/*.py 用来仿真的预定义算法  , Support Algorithms.
 并非每一个算法都有论文依据，因为这些算法里面有自己的改进尝试。
 - GA: Genetic Algorithm 遗传算法
 - SA: Simulated Annealing Algorithm 模拟退火算法

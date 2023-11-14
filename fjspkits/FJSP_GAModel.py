@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from fjspkits.fjsp_entities import Machine
-from fjspkits.fjsp_utils import read_Data_from_file, calculate_sum_load
+from fjspkits.fjsp_utils import read_Data_from_file, calculate_exetime_load
 from utils.plottools import plot_gantt
 
 
@@ -23,7 +23,7 @@ class Genetic4FJSP(object):
         for m in s0:
             print(m)
         print("---------------Key!-----------------")
-        res, aligned_machines = calculate_sum_load(s0, job_num=len(self.jobs))
+        res, aligned_machines = calculate_exetime_load(s0, job_num=len(self.jobs))
         print("每个机器的完工时间：", res)
         print(f"最短完工时间：{max(res)}")
         for machine in aligned_machines:
@@ -45,7 +45,7 @@ class Genetic4FJSP(object):
         plot_gantt(df, self.machine_num)
 
     def __init_solution(self):
-        # 随机初始化
+        # 贪心算法初始化，让时间更紧凑（负载均衡并不好用，因为有前后约束，总会有时间浪费，利用率很难提高）
         res = [Machine(i) for i in range(self.machine_num)]
         end_time_machines = [0 for _ in range(self.machine_num)]
         jobs_tmp = self.jobs.copy()

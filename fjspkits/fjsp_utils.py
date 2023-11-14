@@ -96,7 +96,7 @@ def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mod
 
 
 # 计算适应度，并返回对齐的结果
-def calculate_sum_load(machines, job_num=10):
+def calculate_exetime_load(machines, job_num=10):
     """
     Since the calculated solution only focuses on which tasks are executed on each machine,
     and has not been aligned according to the process time,
