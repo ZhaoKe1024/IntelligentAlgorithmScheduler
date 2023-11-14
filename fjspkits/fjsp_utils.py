@@ -6,7 +6,34 @@
 # @Software: PyCharm
 import copy
 import numpy as np
-from fjspkits.fjsp_entities import Machine
+from fjspkits.fjsp_entities import Machine, Job, Task
+
+
+def read_Data_from_file(file_path):
+    with open(file_path) as fin:
+        first_line = fin.readline().strip().split(' ')
+        job_num = int(first_line[0])
+        machine_num = int(first_line[1])
+
+        job_id = 0
+        task_cnt = 0
+        line = fin.readline()
+        jobs = [Job(i) for i in range(job_num)]
+        while line:
+            parts = [int(s) for s in line.strip().split(' ')]
+            part_index = 1
+            injob_index = 0
+            while part_index < len(parts):
+                tmp_task = Task(task_cnt, job_id, injob_index)
+                injob_index += 1
+                task_cnt += 1
+                for i in range(part_index + 1, part_index + 2 * parts[part_index] + 1, 2):
+                    tmp_task.add_alternate_machine(parts[i] - 1, parts[i + 1])
+                part_index = part_index + 2 * parts[part_index] + 1
+                jobs[job_id].add_task(tmp_task)
+            job_id += 1
+            line = fin.readline()
+    return jobs, machine_num, task_cnt
 
 
 def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mode=None):
@@ -68,13 +95,8 @@ def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mod
     return res
 
 
-# 选择操作：轮盘赌，概率和其适应度成正比，适应度越好，留下的机会越大，最优的一个为1。
-def select():
-    pass
-
-
 # 计算适应度，并返回对齐的结果
-def calculate_sum_load(machines, return_align_result=False, job_num=10):
+def calculate_sum_load(machines, job_num=10):
     """
     Since the calculated solution only focuses on which tasks are executed on each machine,
     and has not been aligned according to the process time,

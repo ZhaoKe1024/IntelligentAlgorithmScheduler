@@ -18,92 +18,12 @@ A workshop has m machines, n jobs, and each job has multiple tasks. Each task ha
 There are order constraints between multiple tasks of each job, and there is no dependency relationship between different jobs.
 Goal: Allocate all tasks to m machines, meet job order constraints, and minimize execution time.
 """
-import copy
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib.patches import Patch
-
-from fjspkits.fjsp_entities import Job, Task
-from fjspkits.fjsp_utils import generate_new_solution, calculate_sum_load
-from utils.plottools import plot_gantt
+from fjspkits.FJSP_GAModel import Genetic4FJSP
 
 
 def run():
-    with open("./datasets/fjsp_sets/brandimarte_mk01.txt") as fin:
-        first_line = fin.readline().strip().split(' ')
-        job_num = int(first_line[0])
-        machine_num = int(first_line[1])
-
-        job_id = 0
-        task_cnt = 0
-        line = fin.readline()
-        jobs = [Job(i) for i in range(job_num)]
-        while line:
-            parts = [int(s) for s in line.strip().split(' ')]
-            part_index = 1
-            injob_index = 0
-            while part_index < len(parts):
-                tmp_task = Task(task_cnt, job_id, injob_index)
-                injob_index += 1
-                task_cnt += 1
-                for i in range(part_index + 1, part_index + 2 * parts[part_index] + 1, 2):
-                    tmp_task.add_alternate_machine(parts[i] - 1, parts[i + 1])
-                part_index = part_index + 2 * parts[part_index] + 1
-                jobs[job_id].add_task(tmp_task)
-            job_id += 1
-            line = fin.readline()
-
-    # 因为一个工件的多个工序之间有先后之分，需要以有序的部分做一个矩阵，序号就是列，先求出最大工序数
-    # print("最大工序数：", max_sequence_num)
-    for j in jobs:
-        print(j)
-    print("----------------------------")
-    # 得到的是[job1, job2, ..., jobn]
-    # jobi=[task1, task2, ..., taskn]
-    # task=[mid, time]
-    # 【初始化，还有优化空间，尽可能产生一个好的初始解】
-    solution = generate_new_solution(jobs=jobs, machine_num=machine_num, mode=0)
-    for m in solution:
-        print(m)
-    # print(str(solution))
-    print("---------------Key!-----------------")
-    res, aligned_machines = calculate_sum_load(solution)
-    print("每个机器的完工时间：", res)
-    print(f"最短完工时间：{max(res)}")
-    for machine in aligned_machines:
-        for task in machine.task_list:
-            print(f"[{task.start_time},{task.finish_time}]", end='|')
-        print()
-    # mutation_solution1 = generate_new_solution(jobs=jobs, machine_num=machine_num, solution1=solution, mode=2)
-    # for m in mutation_solution1:
-    #     print(m)
-    # # 适应度函数，时间越小越好
-    # res = calculate_sum_load(mutation_solution1)
-    # print("每个机器的完工时间：", res)
-    # print(f"最短完工时间：{max(res)}")
-    print(f"最大Task数: {task_cnt}")
-    # 根据machines得到一个pandas用于绘图
-    data_dict = {"Task": {}, "Machine":{},  "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
-    for machine in aligned_machines:
-        for task in machine.task_list:
-            data_dict["Machine"][task.global_index] = "M"+str(task.selected_machine)
-            data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
-            data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
-            data_dict["start_num"][task.global_index] = task.start_time
-            data_dict["end_num"][task.global_index] = task.finish_time
-            data_dict["days_start_to_end"][task.global_index] = task.selected_time
-    df = pd.DataFrame(data_dict)
-    # project start date
-    # proj_start = df.Start.min()
-    # number of days from project start to task start
-    # df['start_num'] = (df.Start - proj_start).dt.days
-    # number of days from project start to end of tasks
-    # df['end_num'] = (df.End - proj_start).dt.days
-    # days between start and end of each task
-    # df['days_start_to_end'] = df.end_num - df.start_num
-    # df['current_num'] = (df.days_start_to_end * df.Completion)
-    plot_gantt(df, machine_num)
+    ga4fjsp = Genetic4FJSP("./datasets/fjsp_sets/brandimarte_mk01.txt")
+    ga4fjsp.schedule()
 
 
 if __name__ == '__main__':

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2021-07-24 16:55
+"""
+重要：甘特图绘制 gantt_plot()
+
+"""
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -123,8 +127,8 @@ reference:
 input: 
 """
 
-def plot_gantt(df, machine_num):
 
+def plot_gantt(df, machine_num):
     def color(row):
         rgb_number = ["#FF0000", "#FFD700", "#FFFF00", "#7CFC00", "#008000", "#00FFFF",
                       "#0000FF", "#6A5ACD", "#800080", "#696969", "#800000", "#D3D3D3"]
@@ -139,12 +143,12 @@ def plot_gantt(df, machine_num):
     fig, (ax, ax1) = plt.subplots(2, figsize=(16, 6), gridspec_kw={'height_ratios': [6, 1]})
     # ax.barh(df.Task, df.current_num, left=df.start_num, color=df.color)
     ax.barh(df.Machine, df.days_start_to_end, left=df.start_num, color=df.color, alpha=0.7)
-    ax.set_yticks(range(machine_num), ["Machine"+str(i) for i in range(machine_num)])
+    ax.set_yticks(range(machine_num), ["Machine" + str(i) for i in range(machine_num)])
 
     # texts
     for idx, row in df.iterrows():
         # ax.text(row.end_num + 0.1, idx, f"{int(row.Completion * 100)}%", va='center', alpha=0.8)
-        ax.text(row.start_num+0.1, row.Machine, row.Task, fontsize=10, va='center', ha='right', alpha=0.8)
+        ax.text(row.start_num + 0.5, row.Machine, row.Task, fontsize=10, va='center', ha='right', alpha=0.8)
 
     # grid lines
     ax.set_axisbelow(True)
@@ -212,6 +216,7 @@ def plot_gantt(df, machine_num):
     ax1.set_yticks([])
 
     plt.show()
+
 
 if __name__ == '__main__':
     # path = "../imgs/stackPlot/result0dat.csv"
