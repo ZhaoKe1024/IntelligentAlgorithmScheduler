@@ -48,7 +48,8 @@ class Genetic4FJSP(object):
             # 每个step交叉20次，选择40个新解里面最好的一个保留
             best_crossover_gene = None
             for _ in range(self.c_times_per_step):
-                gene_c1, gene_c2 = self.CrossoverPOX(self.genes[random.randint(0, self.population_number)], self.genes[random.randint(0, self.population_number)])
+                gene_c1, gene_c2 = self.CrossoverPOX(self.genes[random.randint(0, self.population_number)],
+                                                     self.genes[random.randint(0, self.population_number)])
                 pass  # 比较和选择
             for _ in range(self.p_times_per_step):
                 gene_m = self.mutation(self.genes[random.randint(0, self.population_number)])
@@ -182,10 +183,65 @@ class Genetic4FJSP(object):
 
     def mutation(self, s):
         """根据文献，变异有 交换变异、插入变异、逆转变异等
-        这里复现一下自交换编译：我自己把它定义为，任选一个机器，把其中的工序调换一下
+        这里复现一下单点自交换编译：我自己把它定义为，任选一个机器，把其中的工序调换一下
         用双指针的方法随机调换同一个机器中的两个Job子任务"""
-        pass
+        machine_num = len(s)
+        tar_index = random.randint(0, machine_num)
+        tar_machine = s[tar_index]
+        jobs_list = []
+        for task in tar_machine:
+            if task.parent_job not in jobs_list:
+                jobs_list.append(task.parent_job)
+        if len(jobs_list) > 1:
+            j1, j2 = jobs_list[-2], jobs_list[-1]
+            # 找到索引为j1, j2的任务所在位置
+            j1_index_list = []
+            j2_index_list = []
+            for idx, task in enumerate(tar_machine):
+                if task.parent_job == j1:
+                    j1_index_list.append(idx)
+                elif task.parent_job == j2:
+                    j2_index_list.append(idx)
+            new_tar_m = copy(tar_machine)
+            point, point1, point2 = 0, 0, 0
+            while point1 < len(j1_index_list) and point2 < len(j2_index_list):
+                se = random.randint(0, 2)
+                point = min(j1_index_list[point1], j2_index_list[point2])
+                if se == 0:
+                    new_tar_m[point] = j1_index_list[point1]
+                    point1 += 1
+                else:
+                    new_tar_m[point] = j2_index_list[point2]
+                    point2 += 1
+            while point1 < len(j1_index_list):
+                point = min(j1_index_list[point1], j2_index_list[point2])
+                new_tar_m[point] = j1_index_list[point1]
+                point1 += 1
+            while point2 < len(j2_index_list):
+                point = min(j1_index_list[point1], j2_index_list[point2])
+                new_tar_m[point] = j2_index_list[point2]
+                point2 += 1
+            new_s = copy(s)
+            new_s[tar_index] = new_tar_m
+            return new_s
+        else:
+            return s
 
     # 选择操作：轮盘赌，概率和其适应度成正比，适应度越好，留下的机会越大，最优的一个为1。
+    # 精英保留策略
     def natural_selection(self):
         pass
+
+    def check_toposort(self, solution) -> bool:
+        """验证一个解是否符合拓扑序，只需要依次验证每一个machine上的task list，在各自job内是否有序即可"""
+        for machine in solution:
+            job_ids = [-1 for _ in range(self.jobs)]
+            for task in machine.task_list:
+                if job_ids[task.parent_job] == -1:
+                    job_ids[task.parent_job] = task.injob_index
+                else:
+                    if job_ids[task.parent_job] > task.injob_index:
+                        return False
+                    else:
+                        job_ids[task.parent_job] = task.injob_index
+        return True
