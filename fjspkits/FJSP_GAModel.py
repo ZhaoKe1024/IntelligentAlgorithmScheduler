@@ -4,21 +4,24 @@
 # @Author: ZhaoKe
 # @File : FJSP_GAModel.py
 # @Software: PyCharm
+"""
+
+"""
 import random
 from copy import copy
 
 import numpy as np
-import pandas as pd
 
+from fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
 from fjspkits.fjsp_utils import read_Data_from_file, calculate_exetime_load
-from utils.plottools import plot_gantt
 
 
 class Genetic4FJSP(object):
     def __init__(self, data_file):
         # inputs
         self.jobs, self.machine_num, self.task_num = read_Data_from_file(data_file)
+        self.job_num = len(self.jobs)
         # hyperparameters
         self.population_number = 50
         self.iter_steps = 100
@@ -28,15 +31,16 @@ class Genetic4FJSP(object):
         self.cp = 0.2  # 0.5(1 2) 0.25(3-5) 0.2(6-12) 0.15(13-18) else 0.1
         self.mp = 0.1  # 1/2 of cp
         # variables
-        self.genes = [[] for _ in range(self.population_number)]
+        self.genes = SolutionSortedList()
+        self.best_gene = None
 
     def schedule(self):
         for j in self.jobs:
             print(j)
         print("============initialize solution 0===============")
         for i in range(self.population_number):
-            self.genes[i] = self.__init_solution()
-        best_gene = None
+            self.genes.add_solution(Solution(self.__generate_init_solution(), self.job_num))
+        self.genes.update_fitness()
         results = []
 
         # 遗传算法迭代
@@ -48,11 +52,14 @@ class Genetic4FJSP(object):
             # 每个step交叉20次，选择40个新解里面最好的一个保留
             best_crossover_gene = None
             for _ in range(self.c_times_per_step):
-                gene_c1, gene_c2 = self.CrossoverPOX(self.genes[random.randint(0, self.population_number)],
-                                                     self.genes[random.randint(0, self.population_number)])
+                # 想法：交叉算子不考虑精英策略了吗？
+                gene_c1, gene_c2 = self.CrossoverPOX(self.genes.get_rand_solution().get_machines(),
+                                                     self.genes.get_rand_solution().get_machines())
                 pass  # 比较和选择
             for _ in range(self.p_times_per_step):
-                gene_m = self.mutation(self.genes[random.randint(0, self.population_number)])
+                gene_m = self.mutation(self.genes.get_rand_solution().get_machines())
+
+            # 更新适应度
 
             # current best
             # local_best_gene = ?
@@ -60,13 +67,13 @@ class Genetic4FJSP(object):
             # ----更新全局最好的
 
         print(results)
-        for m in s0:
+        for m in self.best_gene:
             print(m)
         print("---------------Key!-----------------")
-        res, aligned_machines = calculate_exetime_load(s0, job_num=len(self.jobs))
+        res, aligned_machines = calculate_exetime_load(self.best_gene, job_num=len(self.jobs))
         print("每个机器的完工时间：", res)
         print(f"最短完工时间：{max(res)}")
-        for m in s0:
+        for m in self.best_gene:
             print(m)
         for machine in aligned_machines:
             for task in machine.task_list:
@@ -88,7 +95,7 @@ class Genetic4FJSP(object):
         # df = pd.DataFrame(data_dict)
         # plot_gantt(df, self.machine_num)
 
-    def __init_solution(self):
+    def __generate_init_solution(self):
         """贪心算法初始化，让时间更紧凑（负载均衡并不好用，因为有前后约束，总会有时间浪费，利用率很难提高）"""
         res = [Machine(i) for i in range(self.machine_num)]
         end_time_machines = [0 for _ in range(self.machine_num)]
@@ -143,7 +150,7 @@ class Genetic4FJSP(object):
                 new_s1_mi, new_s2_mi = self.__pox(s1[m_idx], s2[m_idx])
                 new_s1[m_idx] = new_s1_mi
                 new_s2[m_idx] = new_s2_mi
-        return new_s1, new_s2
+        return Solution(new_s1, job_num=self.job_num), Solution(new_s2, self.job_num)
 
     def __pox(self, s1_rowi, s2_rowi):
         job_num = len(self.jobs)
@@ -223,13 +230,21 @@ class Genetic4FJSP(object):
                 point2 += 1
             new_s = copy(s)
             new_s[tar_index] = new_tar_m
-            return new_s
+            return Solution(new_s, self.job_num)
         else:
-            return s
+            return Solution(s, self.job_num)
 
     # 选择操作：轮盘赌，概率和其适应度成正比，适应度越好，留下的机会越大，最优的一个为1。
     # 精英保留策略
     def natural_selection(self):
+        """
+        当前 step的population内最优的直接保留，
+        剩下的按照fitness排序随机选择
+        :return:
+        """
+
+        local_best = self.genes.solutions[-1]
+
         pass
 
     def check_toposort(self, solution) -> bool:
