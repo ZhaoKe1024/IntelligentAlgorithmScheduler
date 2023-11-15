@@ -4,6 +4,9 @@
 # @Author: ZhaoKe
 # @File : FJSP_GAModel.py
 # @Software: PyCharm
+import random
+from copy import copy
+
 import numpy as np
 import pandas as pd
 
@@ -14,15 +17,25 @@ from utils.plottools import plot_gantt
 
 class Genetic4FJSP(object):
     def __init__(self, data_file):
+        # inputs
         self.jobs, self.machine_num, self.task_num = read_Data_from_file(data_file)
+        # hyperparameters
         self.population_number = 50
         self.iter_steps = 100
+        # 自己设置的概率，没有依据
+        self.c_times_per_step = 20
+        self.p_times_per_step = 40
+        self.cp = 0.2  # 0.5(1 2) 0.25(3-5) 0.2(6-12) 0.15(13-18) else 0.1
+        self.mp = 0.1  # 1/2 of cp
+        # variables
+        self.genes = [[] for _ in range(self.population_number)]
 
     def schedule(self):
         for j in self.jobs:
             print(j)
         print("============initialize solution 0===============")
-        s0 = self.__init_solution()
+        for i in range(self.population_number):
+            self.genes[i] = self.__init_solution()
         best_gene = None
         results = []
 
@@ -32,8 +45,13 @@ class Genetic4FJSP(object):
             pass
             # --选择--交叉--变异--产生新解
             # best_gene = self.natural_selection()
-            # gene_c1, gene_c2 = self.crossover()
-            # gene_m = self.mutation()
+            # 每个step交叉20次，选择40个新解里面最好的一个保留
+            best_crossover_gene = None
+            for _ in range(self.c_times_per_step):
+                gene_c1, gene_c2 = self.CrossoverPOX(self.genes[random.randint(0, self.population_number)], self.genes[random.randint(0, self.population_number)])
+                pass  # 比较和选择
+            for _ in range(self.p_times_per_step):
+                gene_m = self.mutation(self.genes[random.randint(0, self.population_number)])
 
             # current best
             # local_best_gene = ?
@@ -47,27 +65,30 @@ class Genetic4FJSP(object):
         res, aligned_machines = calculate_exetime_load(s0, job_num=len(self.jobs))
         print("每个机器的完工时间：", res)
         print(f"最短完工时间：{max(res)}")
+        for m in s0:
+            print(m)
         for machine in aligned_machines:
             for task in machine.task_list:
                 print(f"[{task.start_time},{task.finish_time}]", end='|')
             print()
         print(f"最大Task数: {self.task_num}")
+
         # ---------------------------Gantt Plot---------------------------------
-        # 根据machines得到一个pandas用于绘图
-        data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
-        for machine in aligned_machines:
-            for task in machine.task_list:
-                data_dict["Machine"][task.global_index] = "M" + str(task.selected_machine)
-                data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
-                data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
-                data_dict["start_num"][task.global_index] = task.start_time
-                data_dict["end_num"][task.global_index] = task.finish_time
-                data_dict["days_start_to_end"][task.global_index] = task.selected_time
-        df = pd.DataFrame(data_dict)
-        plot_gantt(df, self.machine_num)
+        # # 根据machines得到一个pandas用于绘图
+        # data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
+        # for machine in aligned_machines:
+        #     for task in machine.task_list:
+        #         data_dict["Machine"][task.global_index] = "M" + str(task.selected_machine)
+        #         data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
+        #         data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
+        #         data_dict["start_num"][task.global_index] = task.start_time
+        #         data_dict["end_num"][task.global_index] = task.finish_time
+        #         data_dict["days_start_to_end"][task.global_index] = task.selected_time
+        # df = pd.DataFrame(data_dict)
+        # plot_gantt(df, self.machine_num)
 
     def __init_solution(self):
-        # 贪心算法初始化，让时间更紧凑（负载均衡并不好用，因为有前后约束，总会有时间浪费，利用率很难提高）
+        """贪心算法初始化，让时间更紧凑（负载均衡并不好用，因为有前后约束，总会有时间浪费，利用率很难提高）"""
         res = [Machine(i) for i in range(self.machine_num)]
         end_time_machines = [0 for _ in range(self.machine_num)]
         jobs_tmp = self.jobs.copy()
@@ -81,25 +102,88 @@ class Genetic4FJSP(object):
                 else:
                     first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
                     # 在可选机器中，选一个时间结束最早的机器；或者另一种策略：在可选机器中，选一个用时最少的机器
-                    target_machines = first_task_this_job.target_machine
+                    target_machines = first_task_this_job.target_machine  # list of optional machines
                     target_m_idx = target_machines[0]
                     target_end_time = end_time_machines[target_m_idx]
                     m_index = 0
-                    for m_idx in target_machines:
+                    for j, m_idx in enumerate(target_machines):
                         if target_end_time > end_time_machines[m_idx]:
                             target_m_idx = m_idx
                             target_end_time = end_time_machines[m_idx]
-                            m_index += 1
+                            m_index = j
                     exe_times = first_task_this_job.execute_time
                     end_time_machines[target_m_idx] += exe_times[m_index]
+                    first_task_this_job.selected_machine = target_m_idx
+                    first_task_this_job.selected_time = exe_times[m_index]
                     res[target_m_idx].add_task(first_task_this_job)
+                    # 修改工件下的工序的选择机器
+                    self.jobs[first_task_this_job.parent_job].task_list[
+                        first_task_this_job.injob_index] = first_task_this_job
                     # print(f"to machine[{target_m_idx}]", end_time_machines)
         return res
 
-    def crossover(self, s1, s2):
-        pass
+    def CrossoverPOX(self, s1, s2):
+        """ POX crossover, Precedence Operation Crossover
+        首先明确，解的形式是一个链式矩阵，行数等于机器数，每一个机器上是一个工作序列。
+        两个解的Crossover操作是，解的对应每一行进行交叉
+        每一行的交叉的对象是两个序列
+        交叉就按照POX的方式即可、
+        reference: 张超勇,饶运清,刘向军等.基于POX交叉的遗传算法求解Job-Shop调度问题[J].中国机械工程,2004(23):83-87.
+        :param s1:
+        :param s2:
+        :return:
+        """
+        # First, randomly divide the job list into two parts
+        # 设置一个概率，不是一定要交叉
+        row_num = len(s1)
+        new_s1, new_s2 = copy(s1), copy(s2)
+        for m_idx in range(row_num):
+            if random.random() < self.cp:
+                new_s1_mi, new_s2_mi = self.__pox(s1[m_idx], s2[m_idx])
+                new_s1[m_idx] = new_s1_mi
+                new_s2[m_idx] = new_s2_mi
+        return new_s1, new_s2
+
+    def __pox(self, s1_rowi, s2_rowi):
+        job_num = len(self.jobs)
+
+        random_list_index = list(range(job_num))
+        random.shuffle(random_list_index)  # 打乱job号
+        divide_pos = random.randint(0, job_num)  # 把乱序的Jobs集合分成两部分J1和J2
+        new_s1_row = copy(s1_rowi)
+        new_s2_row = copy(s2_rowi)
+        # 找到两个原gene的J2部分， J1部分保留， J2保留顺序交叉
+        allocate_s1 = []  # 保留J2部分的序列索引，交叉用
+        allocate_s2 = []
+        for idx, task in enumerate(s1_rowi):
+            if task.parent_job in random_list_index[divide_pos:]:
+                allocate_s1.append(idx)
+        for idx, task in enumerate(s2_rowi):
+            if task.parent_job in random_list_index[divide_pos:]:
+                allocate_s2.append(idx)
+        # 交叉操作用双指针方法一遍过
+        point1, point2 = 0, 0
+        while point1 < len(allocate_s1):
+            if point2 < len(allocate_s2):
+                new_s2_row[allocate_s2[point2]] = s1_rowi[allocate_s1[point1]]
+            else:
+                new_s2_row.append(s1_rowi[allocate_s1[point1]])
+            point2 += 1
+            point1 += 1
+        point2, point1 = 0, 0
+        while point2 < len(allocate_s2):
+            if point1 < len(allocate_s1):
+                new_s1_row[allocate_s1[point1]] = s2_rowi[allocate_s2[point2]]
+            else:
+                new_s1_row.append(s2_rowi[allocate_s2[point2]])
+            point1 += 1
+            point2 += 1
+        return new_s1_row, new_s2_row
 
     def mutation(self, s):
+        """根据文献，变异有 交换变异、插入变异、逆转变异等
+        这里复现一下自交换编译：我自己把它定义为，任选一个机器，把其中的工序调换一下
+        用双指针的方法随机调换同一个机器中的两个Job子任务"""
         pass
 
     # 选择操作：轮盘赌，概率和其适应度成正比，适应度越好，留下的机会越大，最优的一个为1。

@@ -18,7 +18,7 @@ root
 └─fjspkits/
 │    └─fjsp_entities.py: Definition of Job, Task, Machine
 │    └─fjsp_utils.py: Definition of some functions such as: read_file, calculate execute time.
-│    └─FJSP_GAModel.py: flow of genetic algorithm for FJSP model.
+│    └─FJSP_GAModel.py: flow of genetic algorithm based on POX Crossover for FJSP model.
 └─simulate.py: For Cloud Scheduling, This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
 └─schedulers/
 │    └─GAScheduler.py, Genetic Algorithms to Cloud Service Scheduling.

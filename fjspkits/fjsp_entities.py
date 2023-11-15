@@ -12,6 +12,7 @@ class Machine(object):
     def __init__(self, machine_id):
         self.machine_id = machine_id
         self.task_list = []
+        self.idle_times = []
 
     def clear(self):
         self.task_list = []
