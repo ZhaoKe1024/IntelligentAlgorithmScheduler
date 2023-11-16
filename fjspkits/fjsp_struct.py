@@ -24,8 +24,12 @@ class Solution(object):
         return self.__machines
 
     def get_fitness(self):
+        # print("len of machines:", len(self.__machines))
+        if self.__machines is None:
+            return -1.0
         if self.__fitness is None or self.__fitness <= 0.0:
-            self.__fitness = calculate_exetime_load(self.__machines, self.job_num)
+            fitnesses, _ = calculate_exetime_load(self.__machines, self.job_num)
+            self.__fitness = max(fitnesses)
         return self.__fitness
 
     def set_fitness(self, value):
@@ -44,7 +48,7 @@ class SolutionSortedList(object):
         归一化的原因是，假如是多目标优化，多个目标最好量纲/数量级统一
         由于时间越短越好，和适应度的定义相反，因此采取max-value的公式
         """
-        max_fitness, min_fitness = self.solutions[-1].get_fitness, self.solutions[0].get_fitness
+        max_fitness, min_fitness = self.solutions[-1].get_fitness(), self.solutions[0].get_fitness()
         for s in self.solutions:
             s.set_fitness((max_fitness - s.get_fitness()) / (max_fitness - min_fitness))
 
@@ -60,4 +64,5 @@ class SolutionSortedList(object):
         self.solutions.insert(idx, s)
 
     def get_rand_solution(self) -> Solution:
-        return self.solutions[random.randint(0, len(self.solutions))]
+        # print(len(self.solutions), random.randint(0, len(self.solutions)))
+        return self.solutions[random.randint(0, len(self.solutions)-1)]

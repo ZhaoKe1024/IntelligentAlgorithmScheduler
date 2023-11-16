@@ -106,10 +106,13 @@ def calculate_exetime_load(machines, job_num=10):
     :param return_align_result:
     :return:
     """
+    # print("len of machines:", len(machines))
     finished = [False for _ in range(len(machines))]  # 是否全部执行完毕
     job_task_index_memory = [0 for _ in range(job_num)]  # 每个job当前执行到哪个task了
     job_end_times_memory = [0 for _ in range(job_num)]  # 记录job当前task的结束时间
     machine_task_index_memory = [0 for _ in range(len(machines))]
+    # for m in machines:
+    #     print(m)
     # 遍历机器，遍历task list，记录任务结束时间（这样的方法前提是任务之间没有依赖冲突，如何检测有无乱序呢？）
     while not all(finished):
         for i, machine in enumerate(machines):
@@ -120,9 +123,16 @@ def calculate_exetime_load(machines, job_num=10):
             for j in range(machine_task_index_memory[i], len(machine.task_list)):
                 cur_task = machine.task_list[j]  # 只读变量，不用于被赋值
                 # 当前task可以执行的条件：job执行到的工序，就是当前task的工序号
+
+                # for m in machines:
+                #     print(m)
+                # print("job task index memory:\n", job_task_index_memory)
+                # print("job end times memory:\n", job_end_times_memory)
+                # print("machine task index memory:\n", machine_task_index_memory)
+                # print(finished)
+                # print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
                 if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
-                    # print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
-                    j_machine, j_time = cur_task.get_target_machine()  # 获取当前task的所在机器和所需时间
+                    _, j_time = cur_task.get_target_machine()  # 获取当前task的所在机器和所需时间
                     start_t = None
                     end_t = None
                     if j == 0:
@@ -154,20 +164,19 @@ def calculate_exetime_load(machines, job_num=10):
                     machine.task_list[j].finish_time = end_t
                     # 表示当前job的下一个task可以执行了，不需要判断越界，因为machine已经约束
                     job_task_index_memory[cur_task.parent_job] += 1  # 当前job的下一个task能够执行了
-                    # job_task_index_memory[cur_task.selected_machine] += 1  # 当前machine的下一个task能执行了
                     # 下一个task是否能执行？时间如何allocate？
                     job_end_times_memory[cur_task.parent_job] = machine.task_list[j].finish_time
                     machine_task_index_memory[i] += 1
-                    # print("job task index memory:\n", job_task_index_memory)
-                    # print("job end times memory:\n", job_end_times_memory)
-                    # print("machine task index memory:\n", machine_task_index_memory)
                     # print("-------")
                 else:
                     break
             if machine_task_index_memory[i] == len(machine.task_list):
                 finished[i] = True
+            # print(finished)
 
     res = []  # Total time executed on each machine
     for machine in machines:
+        if len(machine.task_list) == 0:
+            continue
         res.append(machine.task_list[-1].finish_time)
     return res, machines
