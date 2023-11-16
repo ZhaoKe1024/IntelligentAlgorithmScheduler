@@ -5,6 +5,8 @@
 # @File : fjsp_utils.py
 # @Software: PyCharm
 import copy
+import json
+
 import numpy as np
 from fjspkits.fjsp_entities import Machine, Job, Task
 
@@ -34,6 +36,17 @@ def read_Data_from_file(file_path):
             job_id += 1
             line = fin.readline()
     return jobs, machine_num, task_cnt
+
+
+def read_Data_from_json(json_path):
+    json_dict = None
+    with open(json_path, 'r', encoding='utf_8') as fp:
+        json_dict = json.load(fp)
+    for dict_item in json_dict["commandList"]:
+        for item in dict_item:
+            print(item)  # print keys of json_data
+        # print(json_dict[item])  # print values of json_data
+    return json_dict["commandList"]
 
 
 def generate_new_solution(jobs, machine_num, solution1=None, solution2=None, mode=None):
@@ -111,6 +124,7 @@ def calculate_exetime_load(machines, job_num=10):
     job_task_index_memory = [0 for _ in range(job_num)]  # 每个job当前执行到哪个task了
     job_end_times_memory = [0 for _ in range(job_num)]  # 记录job当前task的结束时间
     machine_task_index_memory = [0 for _ in range(len(machines))]
+    cycle_check = []  # 检测是否出现循环
     # for m in machines:
     #     print(m)
     # 遍历机器，遍历task list，记录任务结束时间（这样的方法前提是任务之间没有依赖冲突，如何检测有无乱序呢？）
@@ -130,7 +144,9 @@ def calculate_exetime_load(machines, job_num=10):
                 # print("job end times memory:\n", job_end_times_memory)
                 # print("machine task index memory:\n", machine_task_index_memory)
                 # print(finished)
-                # print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
+
+                print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
+
                 if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
                     _, j_time = cur_task.get_target_machine()  # 获取当前task的所在机器和所需时间
                     start_t = None
@@ -167,12 +183,21 @@ def calculate_exetime_load(machines, job_num=10):
                     # 下一个task是否能执行？时间如何allocate？
                     job_end_times_memory[cur_task.parent_job] = machine.task_list[j].finish_time
                     machine_task_index_memory[i] += 1
+                    cycle_check = []
                     # print("-------")
                 else:
+                    current_string = f"{cur_task.parent_job}-{cur_task.injob_index}"
+                    if len(cycle_check) == 0:
+                        cycle_check.append(current_string)
+                    else:
+                        if current_string == cycle_check[0]:
+                            raise Exception("ZhaoKe's maker says that There is a loop in this solution vector!!")
+                        else:
+                            cycle_check.append(current_string)
                     break
             if machine_task_index_memory[i] == len(machine.task_list):
                 finished[i] = True
-            # print(finished)
+            print(finished)
 
     res = []  # Total time executed on each machine
     for machine in machines:

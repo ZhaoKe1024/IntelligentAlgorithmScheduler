@@ -12,9 +12,12 @@ from copy import copy, deepcopy
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+
 from fjspkits.fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
 from fjspkits.fjsp_utils import read_Data_from_file, calculate_exetime_load
+from utils.plottools import plot_gantt
 
 
 class Genetic4FJSP(object):
@@ -25,7 +28,7 @@ class Genetic4FJSP(object):
         self.job_num = len(self.jobs)
         # hyperparameters
         self.population_number = 10
-        self.iter_steps = 2
+        self.iter_steps = 4
         # 自己设置的概率，没有依据
         self.c_times_per_step = 1
         self.m_times_per_step = 1
@@ -51,7 +54,8 @@ class Genetic4FJSP(object):
             print(f"---->steps {t}/{self.iter_steps}----")
             # --选择--交叉--变异--产生新解
             # 每个step交叉20次，选择40个新解里面最好的一个保留
-            b_gene_c1, b_gene_c2, b_gene_m = Solution(None, self.job_num), Solution(None, self.job_num), Solution(None, self.job_num)
+            b_gene_c1, b_gene_c2 = Solution(None, self.job_num), Solution(None, self.job_num)
+            # b_gene_m = Solution(None, self.job_num)
             print(f"---->steps {t}/{self.iter_steps}----crossover----")
             for k in range(self.c_times_per_step):
                 print(f"---->steps {t}/{self.iter_steps}----crossover{k}/{self.c_times_per_step}----")
@@ -73,18 +77,18 @@ class Genetic4FJSP(object):
                     b_gene_c1 = gene_c1
                 if gene_c2.get_fitness() > b_gene_c2.get_fitness():
                     b_gene_c2 = gene_c2
-            print(f"---->steps {t}/{self.iter_steps}----mutation----")
-            tmp = self.genes.get_rand_solution().get_machines()
-            for m in tmp:
-                print(m)
-            for k in range(self.m_times_per_step):
-                print(f"---->steps {t}/{self.iter_steps}----mutation{k}/{self.m_times_per_step}----")
-                gene_m = self.mutation(tmp)
-                print(self.check_toposort(gene_m.get_machines()))
-                for machine in gene_m.get_machines():
-                    print(machine)
-                if gene_m.get_fitness() > b_gene_m.get_fitness():
-                    b_gene_m = gene_m
+            # print(f"---->steps {t}/{self.iter_steps}----mutation----")
+            # tmp = self.genes.get_rand_solution().get_machines()
+            # for m in tmp:
+            #     print(m)
+            # for k in range(self.m_times_per_step):
+            #     print(f"---->steps {t}/{self.iter_steps}----mutation{k}/{self.m_times_per_step}----")
+            #     gene_m = self.mutation(tmp)
+            #     print(self.check_toposort(gene_m.get_machines()))
+            #     for machine in gene_m.get_machines():
+            #         print(machine)
+            #     if gene_m.get_fitness() > b_gene_m.get_fitness():
+            #         b_gene_m = gene_m
             # 更新适应度
             self.genes.update_fitness()
             # 自然选择，替换种群
@@ -92,13 +96,13 @@ class Genetic4FJSP(object):
             selected_genes = self.natural_selection()
 
             # 添加 变异、交叉、选择的新解
-            for i in range(len(selected_genes)+3):
+            for i in range(len(selected_genes)+2):
                 self.genes.solutions.pop()
             for ge in selected_genes:
                 self.genes.add_solution(ge)
             self.genes.add_solution(b_gene_c1)
             self.genes.add_solution(b_gene_c2)
-            self.genes.add_solution(b_gene_m)
+            # self.genes.add_solution(b_gene_m)
             # current best
             self.best_gene = self.genes.solutions[0]
             print(f"---->steps {t}/{self.iter_steps}----best fitness:{self.best_gene.get_fitness()}----")
@@ -123,7 +127,7 @@ class Genetic4FJSP(object):
         print("每个机器的完工时间：", res)
         print(f"最短完工时间：{max(res)}")
 
-        with open(output_prefix+"_minmakespan.txt", 'w') as fin:
+        with open(output_prefix+"_minmakespan.txt", 'w', encoding="utf_8") as fin:
             fin.write(f"最短完工时间：{max(res)}")
         res_in = open(output_prefix+"_planning.txt", 'w')
         for m in self.best_gene.get_machines():
@@ -137,18 +141,18 @@ class Genetic4FJSP(object):
         print(f"最大Task数: {self.task_num}")
         res_in.close()
         # ---------------------------Gantt Plot---------------------------------
-        # # 根据machines得到一个pandas用于绘图
-        # data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
-        # for machine in aligned_machines:
-        #     for task in machine.task_list:
-        #         data_dict["Machine"][task.global_index] = "M" + str(task.selected_machine)
-        #         data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
-        #         data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
-        #         data_dict["start_num"][task.global_index] = task.start_time
-        #         data_dict["end_num"][task.global_index] = task.finish_time
-        #         data_dict["days_start_to_end"][task.global_index] = task.selected_time
-        # df = pd.DataFrame(data_dict)
-        # plot_gantt(df, self.machine_num)
+        # 根据machines得到一个pandas用于绘图
+        data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
+        for machine in aligned_machines:
+            for task in machine.task_list:
+                data_dict["Machine"][task.global_index] = "M" + str(task.selected_machine)
+                data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
+                data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
+                data_dict["start_num"][task.global_index] = task.start_time
+                data_dict["end_num"][task.global_index] = task.finish_time
+                data_dict["days_start_to_end"][task.global_index] = task.selected_time
+        df = pd.DataFrame(data_dict)
+        plot_gantt(df, self.machine_num, fname=output_prefix+"_gantt.png")
 
     def __generate_init_solution(self):
         """贪心算法初始化，让时间更紧凑（负载均衡并不好用，因为有前后约束，总会有时间浪费，利用率很难提高）"""
@@ -195,9 +199,9 @@ class Genetic4FJSP(object):
     def CrossoverPOX(self, s1, s2):
         """ POX crossover, Precedence Operation Crossover
         首先明确，解的形式是一个链式矩阵，行数等于机器数，每一个机器上是一个工作序列。
-        两个解的Crossover操作是，解的对应每一行进行交叉
-        每一行的交叉的对象是两个序列
-        交叉就按照POX的方式即可、
+        两个解的Crossover操作是，解的对应每一行进行交叉,每一行的交叉的对象是两个序列,交叉就按照POX的方式即可。
+        我得出不可行解的原因是，只随机挑选了若干个机器进行交叉，应该交叉所有机器，否则会出现重复的任务或者缺少的任务。
+        全部交叉还是不行，重复的更多了。
         reference: 张超勇,饶运清,刘向军等.基于POX交叉的遗传算法求解Job-Shop调度问题[J].中国机械工程,2004(23):83-87.
         :param s1:
         :param s2:
@@ -207,19 +211,18 @@ class Genetic4FJSP(object):
         # 设置一个概率，不是一定要交叉
         row_num = len(s1)
         new_s1, new_s2 = deepcopy(s1), deepcopy(s2)
-        for m_idx in range(row_num):
-            if random.random() < self.cp:
-                new_s1_mi, new_s2_mi = self.__pox(s1[m_idx], s2[m_idx])
-                new_s1[m_idx] = new_s1_mi
-                new_s2[m_idx] = new_s2_mi
-        return Solution(new_s1, job_num=self.job_num), Solution(new_s2, self.job_num)
-
-    def __pox(self, s1_rowi, s2_rowi):
         job_num = len(self.jobs)
 
         random_list_index = list(range(job_num))
         random.shuffle(random_list_index)  # 打乱job号
         divide_pos = random.randint(0, job_num-1)  # 把乱序的Jobs集合分成两部分J1和J2
+        for m_idx in range(row_num):
+            new_s1_mi, new_s2_mi = self.__pox(s1[m_idx], s2[m_idx], random_list_index, divide_pos)
+            new_s1[m_idx] = new_s1_mi
+            new_s2[m_idx] = new_s2_mi
+        return Solution(new_s1, job_num=self.job_num), Solution(new_s2, self.job_num)
+
+    def __pox(self, s1_rowi, s2_rowi, random_list_index, divide_pos):
         new_s1_row = deepcopy(s1_rowi)
         new_s2_row = deepcopy(s2_rowi)
         # 找到两个原gene的J2部分， J1部分保留， J2保留顺序交叉
@@ -240,6 +243,12 @@ class Genetic4FJSP(object):
                 new_s2_row.task_list.append(s1_rowi.task_list[allocate_s1[point1]])
             point2 += 1
             point1 += 1
+        # 忘记删去多余的了
+        idx = 0
+        while point2 < len(allocate_s2):
+            new_s2_row.task_list.pop(allocate_s2[-1-idx])
+            point2 += 1
+            idx += 1
         point2, point1 = 0, 0
         while point2 < len(allocate_s2):
             if point1 < len(allocate_s1):
@@ -248,6 +257,11 @@ class Genetic4FJSP(object):
                 new_s1_row.task_list.append(s2_rowi.task_list[allocate_s2[point2]])
             point1 += 1
             point2 += 1
+        idx = 0
+        while point1 < len(allocate_s1):
+            new_s1_row.task_list.pop(allocate_s1[-1 - idx])
+            point1 += 1
+            idx += 1
         return new_s1_row, new_s2_row
 
     def mutation(self, s):

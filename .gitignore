@@ -1,4 +1,6 @@
 /datas/
+/datasets/
+/deprecated/
 /chaos-res-matrix/
 /imgs/
 /imgr2/
@@ -7,4 +9,3 @@
 */__pycache__
 **/__pycache__
 /__pycache__/
-/deprecated/

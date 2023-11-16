@@ -7,6 +7,7 @@
 from datastructures.ActivityGraph import AOV, AOE
 from datastructures.graph_entities import Vertex, Edge
 
+
 def AOV_example():
     # source 0, sink 8
     indices = set()
@@ -36,6 +37,7 @@ def AOV_example():
         print([ver.index for ver in topo])
         # print(graph.check_path([ver.index for ver in topo]))
 
+
 def AOE_example():
     # source 0, sink 8
     indices = set()
@@ -61,5 +63,6 @@ def AOE_example():
 
 
 if __name__ == '__main__':
-    AOE_example()
+    AOV_example()
+    # AOE_example()
     # print(list(range(9, 0, -1)))

@@ -128,7 +128,7 @@ input:
 """
 
 
-def plot_gantt(df, machine_num):
+def plot_gantt(df, machine_num, fname):
     rgb_number = ["#FF0000", "#FFD700", "#FFFF00", "#7CFC00", "#008000", "#00FFFF",
                   "#0000FF", "#6A5ACD", "#800080", "#696969", "#800000", "#D3D3D3"]
     def color(row):
@@ -211,8 +211,8 @@ def plot_gantt(df, machine_num):
     ax1.spines['bottom'].set_visible(False)
     ax1.set_xticks([])
     ax1.set_yticks([])
-
-    plt.show()
+    plt.savefig(fname, dpi=300, format='png')
+    # plt.show()
 
 
 if __name__ == '__main__':
