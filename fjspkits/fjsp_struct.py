@@ -8,13 +8,13 @@ import random
 
 import numpy as np
 import operator
-from fjsp_utils import calculate_exetime_load
+from fjspkits.fjsp_utils import calculate_exetime_load
 
 
 class Solution(object):
     def __init__(self, machines, job_num):
         self.__machines = machines
-        self.__fitness = None
+        self.__fitness = -1.0
         self.job_num = job_num
 
     def set_machines(self, machines):
@@ -24,7 +24,7 @@ class Solution(object):
         return self.__machines
 
     def get_fitness(self):
-        if self.__fitness is None:
+        if self.__fitness is None or self.__fitness <= 0.0:
             self.__fitness = calculate_exetime_load(self.__machines, self.job_num)
         return self.__fitness
 
@@ -34,7 +34,8 @@ class Solution(object):
 
 class SolutionSortedList(object):
     """为了优化进化计算中的自然选择算子，用排序列表来组织种群是最好的"""
-    def __init__(self, desc=False):
+
+    def __init__(self, desc=True):
         self.solutions = []
         self.desc = desc
 
@@ -45,7 +46,7 @@ class SolutionSortedList(object):
         """
         max_fitness, min_fitness = self.solutions[-1].get_fitness, self.solutions[0].get_fitness
         for s in self.solutions:
-            s.set_fitness((max_fitness - s.get_fitness())/(max_fitness-min_fitness))
+            s.set_fitness((max_fitness - s.get_fitness()) / (max_fitness - min_fitness))
 
     def add_solution(self, s: Solution):
         """有序列表，插入数据采用二分法定位最快，但是现在还没改成二分法，先记一下"""
@@ -60,4 +61,3 @@ class SolutionSortedList(object):
 
     def get_rand_solution(self) -> Solution:
         return self.solutions[random.randint(0, len(self.solutions))]
-

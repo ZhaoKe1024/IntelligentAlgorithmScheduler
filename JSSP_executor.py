@@ -18,6 +18,7 @@ A workshop has m machines, n jobs, and each job has multiple tasks. Each task ha
 There are order constraints between multiple tasks of each job, and there is no dependency relationship between different jobs.
 Goal: Allocate all tasks to m machines, meet job order constraints, and minimize execution time.
 """
+# import time
 from fjspkits.FJSP_GAModel import Genetic4FJSP
 
 
@@ -28,3 +29,5 @@ def run():
 
 if __name__ == '__main__':
     run()
+    # print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    # print(time.strftime("%Y%m%d%H%M", time.localtime()))

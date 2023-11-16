@@ -9,10 +9,10 @@
 """
 import random
 from copy import copy
-
+import time
 import numpy as np
-
-from fjsp_struct import Solution, SolutionSortedList
+import matplotlib.pyplot as plt
+from fjspkits.fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
 from fjspkits.fjsp_utils import read_Data_from_file, calculate_exetime_load
 
@@ -30,6 +30,7 @@ class Genetic4FJSP(object):
         self.p_times_per_step = 40
         self.cp = 0.2  # 0.5(1 2) 0.25(3-5) 0.2(6-12) 0.15(13-18) else 0.1
         self.mp = 0.1  # 1/2 of cp
+        self.max_select_p = 0.55
         # variables
         self.genes = SolutionSortedList()
         self.best_gene = None
@@ -41,46 +42,76 @@ class Genetic4FJSP(object):
         for i in range(self.population_number):
             self.genes.add_solution(Solution(self.__generate_init_solution(), self.job_num))
         self.genes.update_fitness()
-        results = []
+        self.best_gene = self.genes.solutions[0]
+        results = [self.best_gene.get_fitness()]
 
         # 遗传算法迭代
-        for t in range(self.iter_steps):
+        for t in range(1, self.iter_steps):
             print(f"---->steps {t}/{self.iter_steps}----")
-            pass
             # --选择--交叉--变异--产生新解
-            # best_gene = self.natural_selection()
             # 每个step交叉20次，选择40个新解里面最好的一个保留
-            best_crossover_gene = None
+            b_gene_c1, b_gene_c2, b_gene_m = Solution(None, self.job_num), Solution(None, self.job_num), Solution(None, self.job_num)
             for _ in range(self.c_times_per_step):
                 # 想法：交叉算子不考虑精英策略了吗？
                 gene_c1, gene_c2 = self.CrossoverPOX(self.genes.get_rand_solution().get_machines(),
                                                      self.genes.get_rand_solution().get_machines())
-                pass  # 比较和选择
+                if gene_c1.get_fitness() > b_gene_c1.get_fitness():
+                    b_gene_c1 = gene_c1
+                if gene_c2.get_fitness() > b_gene_c2.get_fitness():
+                    b_gene_c2 = gene_c2
             for _ in range(self.p_times_per_step):
                 gene_m = self.mutation(self.genes.get_rand_solution().get_machines())
-
+                if gene_m.get_fitness() > b_gene_m:
+                    b_gene_m = gene_m
             # 更新适应度
+            self.genes.update_fitness()
+            # 自然选择，替换种群
+            selected_genes = self.natural_selection()
 
+            # 添加 变异、交叉、选择的新解
+            for i in range(len(selected_genes)+3):
+                self.genes.solutions.pop()
+            for ge in selected_genes:
+                self.genes.add_solution(ge)
+            self.genes.add_solution(b_gene_c1)
+            self.genes.add_solution(b_gene_c2)
+            self.genes.add_solution(b_gene_m)
             # current best
-            # local_best_gene = ?
-            # ----搜索当前代最好的
-            # ----更新全局最好的
+            self.best_gene = self.genes.solutions[0]
+            results.append(self.best_gene.get_fitness())
 
+        output_prefix = "./results/t"+time.strftime("%Y%m%d%H%M", time.localtime())
         print(results)
+        np.savetxt(output_prefix+"_itervalues.txt", results, fmt='%.18e', delimiter=',', newline='\n')
+
+        plt.figure(0)
+        plt.plot(results, c='black')
+        plt.xlabel("step")
+        plt.ylabel("fitness")
+        plt.grid()
+        plt.savefig(output_prefix+"_iterplot.txt", dpi=300, format='png')
+        plt.close()
+
         for m in self.best_gene:
             print(m)
         print("---------------Key!-----------------")
         res, aligned_machines = calculate_exetime_load(self.best_gene, job_num=len(self.jobs))
         print("每个机器的完工时间：", res)
         print(f"最短完工时间：{max(res)}")
+
+        with open(output_prefix+"_minmakespan.txt", 'w') as fin:
+            fin.write(f"最短完工时间：{max(res)}")
+        res_in = open(output_prefix+"_planning.txt")
         for m in self.best_gene:
             print(m)
         for machine in aligned_machines:
             for task in machine.task_list:
-                print(f"[{task.start_time},{task.finish_time}]", end='|')
+                print(f"Task({task.parent_job}-{task.injob_index})"+f"[{task.start_time},{task.finish_time}]", end='||')
+                res_in.write(f"Task({task.parent_job}-{task.injob_index})"+f"[{task.start_time},{task.finish_time}]||")
             print()
+            res_in.write('\n')
         print(f"最大Task数: {self.task_num}")
-
+        res_in.close()
         # ---------------------------Gantt Plot---------------------------------
         # # 根据machines得到一个pandas用于绘图
         # data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
@@ -238,14 +269,19 @@ class Genetic4FJSP(object):
     # 精英保留策略
     def natural_selection(self):
         """
-        当前 step的population内最优的直接保留，
+        当前 step的population内最优的直接保留，但是根据适应度计算阈值必定会让最优留下，所以没事
+        但是会不会导致留下的精英太多了，限制了搜索范围，导致局部最优解太明显，这是个很大的问题，思考一下。
+        有办法了，可以设置阈值最大为0.5或者0.4
         剩下的按照fitness排序随机选择
         :return:
         """
-
-        local_best = self.genes.solutions[-1]
-
-        pass
+        res = []
+        for so in self.genes.solutions:
+            tmp_threshold = self.max_select_p*so.get_fitness()
+            if random.random() < tmp_threshold:
+                res.append(so)
+        # local_best = self.genes.solutions[-1]
+        return res
 
     def check_toposort(self, solution) -> bool:
         """验证一个解是否符合拓扑序，只需要依次验证每一个machine上的task list，在各自job内是否有序即可"""
