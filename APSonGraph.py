@@ -4,8 +4,7 @@
 # @Author: ZhaoKe
 # @File : APSonGraph.py
 # @Software: PyCharm
-
-from datastructures.ActivityGraph import AOV, AOE
+from datastructures.ActivityGraph import ActivityNetwork
 from datastructures.graph_entities import Vertex, Edge
 
 from fjspkits.fjsp_utils import read_Data_from_json
@@ -20,9 +19,34 @@ class SOP(object):
         self.timespan = timespan
 
 
-
 def run():
-    read_Data_from_json("./datasets/fjsp_sets/排程测试入参01.json")
+    json_data = read_Data_from_json("./datasets/fjsp_sets/排程测试入参01.json")
+    vertex_list = []
+    command_id2ver_id = dict()
+    ver_id = 0
+    for dict_item in json_data:
+        for key in dict_item:
+            # print(key, ':', dict_item[key])
+            command_id2ver_id[dict_item["id"]] = ver_id
+            vertex_list.append(Vertex(index=ver_id, name=dict_item["id"], duration=int(dict_item["time"])))
+            ver_id += 1
+    edge_list = []
+    ver_id, e_id = 0, 0
+    for dict_item in json_data:
+        for _ in dict_item:
+            if dict_item["nextCommandIds"] is not None:
+                for post_v in dict_item["nextCommandIds"]:
+                    edge_list.append(Edge(e_id, ver_id, int(command_id2ver_id[post_v])))
+                    e_id += 1
+            if dict_item["preCommandIds"] is not None:
+                for pre_v in dict_item["preCommandIds"]:
+                    edge_list.append(Edge(e_id, int(command_id2ver_id[pre_v]), ver_id))
+                    e_id += 1
+            ver_id += 1
+    print("number of vertices: ", len(vertex_list))
+    print("number of edges", len(edge_list))
+    # for edge in edge_list:
+    #     print(f"{edge.pre_v},{edge.post_v}")
     # # source 0, sink 8
     # indices = set()
     # edges = []
@@ -36,10 +60,11 @@ def run():
     #         line = fi.readline()
     # vertices1 = [Vertex(i, chr(65 + i)) for i in indices]
     #
-    # for edge in edges:
-    #     print(f"{edge.pre_v},{edge.post_v},{edge.weight}")
-    # graph = AOV(vertices1, edges)
-    # all_topo_orders = graph.topological_sort_all()
+    graph = ActivityNetwork(vertex_list, edge_list)
+    graph.topological_sort_all()
+    # all_topo_orders = graph.topological_sort_single()
+    # for v in all_topo_orders:
+    #     print(v.index)
     #
     # path1 = [0, 3, 1, 2, 5, 4, 7, 6, 8]
     # print("is it path topological ordered:")

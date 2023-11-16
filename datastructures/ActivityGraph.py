@@ -18,11 +18,15 @@
 """
 from collections import deque
 
-
 """
 关键路径求解，关键是求解每个活动的“最早开始时间”和“最晚开始时间”，两者相等就代表是关键活动
 """
-class AOE(object):
+
+
+class ActivityNetwork(object):
+    """同时具有AOV和AOE的性质
+    下一步改进，"""
+
     def __init__(self, vertex_list, edges):
         self.vertex_list = vertex_list
 
@@ -44,8 +48,11 @@ class AOE(object):
             self.pre_weight[edge.post_v].append(edge.weight)
             self.post_weight[edge.pre_v].append(edge.weight)
 
+        self.marked = [False for _ in range(len(vertex_list))]
+        self.topological_set = []
+
     # 返回一个拓扑序列
-    def topological_sort(self):
+    def topological_sort_single(self):
         V = len(self.vertex_list)
         # print("count of vertex:", V)
         for i in range(V):
@@ -60,8 +67,7 @@ class AOE(object):
             count += 1
             self.__traverse_apply(v.index)
         if count < V:
-            print("no topological order")
-            return None
+            return res
         else:
             return res
 
@@ -71,6 +77,7 @@ class AOE(object):
     从汇点出发计算最晚发生时间
     两个时间相等的就是关键路径
     """
+
     def critical_path(self):
         v_num = len(self.vertex_list)
 
@@ -89,7 +96,7 @@ class AOE(object):
 
         lastlist = [earlist[-1] for _ in range(v_num)]
 
-        for i in range(v_num-1, -1, -1):
+        for i in range(v_num - 1, -1, -1):
             if out_degree[i] > 0:
                 continue
             dag_j = self.pre_list[i]
@@ -106,45 +113,6 @@ class AOE(object):
         # print(res_path)
         return res_path
 
-    def __traverse_apply(self, ind):
-        for ver in self.post_list[ind]:
-            self.__in_degree_list[ver.index] -= 1
-            if self.__in_degree_list[ver.index] == 0:
-                self.__que.append(ver)
-
-    # 判断序列是不是该图的拓扑序列
-    def check_path(self, path):
-        assert len(path) == len(self.vertex_list), "length not matches."
-        path_r = path[::-1]
-        for i in range(len(path)):
-            tmp = [ver.index for ver in self.post_list[path_r[i]]]
-            for j in range(len(path) - i - 1):
-                if self.vertex_list[path[j]].index in tmp:
-                    return False
-        return True
-
-
-class AOV(object):
-    def __init__(self, vertex_list, edges):
-        self.vertex_list = vertex_list
-        self.__in_degree_list = [0 for _ in range(len(vertex_list))]
-
-        for ed in edges:
-            self.__in_degree_list[ed.post_v] += 1
-
-        self.adj_dag = [[] for _ in vertex_list]
-        for edge in edges:
-            self.adj_dag[edge.pre_v].append(vertex_list[edge.post_v])
-        # for adj_link in self.adj_dag:
-        #     print([ver.index for ver in adj_link])
-
-        self.marked = [False for _ in range(len(vertex_list))]
-        self.topological_set = []
-
-    def key_path(self):
-        """关键路径"""
-        pass
-
     # 返回一个拓扑序列
     def topological_sort_all(self):
         self.topological_sort(deque())
@@ -157,6 +125,10 @@ class AOV(object):
             # print("here", self.vertex_list[i])
             # print(self.__in_degree_list)
             # print("result:", [ver_1.index for ver_1 in topo_vec])
+            for v in list(topo_vec):
+                print(v.index, end=' ')
+            print()
+            # print(list(topo_vec))
             self.topological_set.append(list(topo_vec.copy()))
             # self.topological_set.append([ver_1.index for ver_1 in topo_vec])
             # return
@@ -175,7 +147,7 @@ class AOV(object):
                 self.marked[i] = False
 
     def __traverse_apply(self, ind, add_or_sub=False):
-        for ver in self.adj_dag[ind]:
+        for ver in self.post_list[ind]:
             if add_or_sub:
                 self.__in_degree_list[ver.index] += 1
             else:
@@ -186,7 +158,7 @@ class AOV(object):
         assert len(path) == len(self.vertex_list), "length not matches."
         path_r = path[::-1]
         for i in range(len(path)):
-            tmp = [ver.index for ver in self.adj_dag[path_r[i]]]
+            tmp = [ver.index for ver in self.post_list[path_r[i]]]
             for j in range(len(path) - i - 1):
                 if self.vertex_list[path[j]].index in tmp:
                     return False

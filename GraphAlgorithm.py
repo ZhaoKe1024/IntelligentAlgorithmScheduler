@@ -4,7 +4,7 @@
 # @Author: ZhaoKe
 # @File : GraphAlgorithm.py
 # @Software: PyCharm
-from datastructures.ActivityGraph import AOV, AOE
+from datastructures.ActivityGraph import ActivityNetwork
 from datastructures.graph_entities import Vertex, Edge
 
 
@@ -24,7 +24,7 @@ def AOV_example():
 
     for edge in edges:
         print(f"{edge.pre_v},{edge.post_v},{edge.weight}")
-    graph = AOV(vertices1, edges)
+    graph = ActivityNetwork(vertices1, edges)
     all_topo_orders = graph.topological_sort_all()
 
     path1 = [0, 3, 1, 2, 5, 4, 7, 6, 8]
@@ -51,11 +51,11 @@ def AOE_example():
             edges.append(Edge(int(parts[0]), int(parts[1]), int(parts[2])))
             line = fi.readline()
     vertices1 = [Vertex(i, chr(65 + i)) for i in indices]
-    aoe_dag = AOE(vertices1, edges)
+    aoe_dag = ActivityNetwork(vertices1, edges)
 
     for edge in edges:
         print(f"{edge.pre_v},{edge.post_v},{edge.weight}")
-    topo_list = aoe_dag.topological_sort()
+    # topo_list = aoe_dag.topological_sort()
     # print([ver.index for ver in topo_list])
     print('----critical path----')
     cp = aoe_dag.critical_path()
@@ -63,6 +63,9 @@ def AOE_example():
 
 
 if __name__ == '__main__':
+    print("-------AOV---------")
     AOV_example()
-    # AOE_example()
+    print("----AOE--------")
+    AOE_example()
+
     # print(list(range(9, 0, -1)))

@@ -42,9 +42,9 @@ def read_Data_from_json(json_path):
     json_dict = None
     with open(json_path, 'r', encoding='utf_8') as fp:
         json_dict = json.load(fp)
-    for dict_item in json_dict["commandList"]:
-        for item in dict_item:
-            print(item)  # print keys of json_data
+    # for dict_item in json_dict["commandList"]:
+    #     for item in dict_item:
+    #         print(item)  # print keys of json_data
         # print(json_dict[item])  # print values of json_data
     return json_dict["commandList"]
 
