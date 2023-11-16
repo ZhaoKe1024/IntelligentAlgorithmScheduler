@@ -330,15 +330,38 @@ class Genetic4FJSP(object):
         return res
 
     def check_toposort(self, solution) -> bool:
-        """验证一个解是否符合拓扑序，只需要依次验证每一个machine上的task list，在各自job内是否有序即可"""
-        for machine in solution:
-            job_ids = [-1 for _ in range(len(self.jobs))]
-            for task in machine.task_list:
-                if job_ids[task.parent_job] == -1:
-                    job_ids[task.parent_job] = task.injob_index
-                else:
-                    if job_ids[task.parent_job] > task.injob_index:
-                        return False
+        """验证一个解是否符合拓扑序，
+        事实证明，”依次验证每一个machine上的task list，在各自job内是否有序即可,“完全是不行的
+        还是要用n指针来做
+        """
+        finished = [False for _ in range(len(solution))]  # 是否全部执行完毕
+
+        job_task_index_memory = [0 for _ in range(self.job_num)]  # 每个job当前执行到哪个task了
+        # job_end_times_memory = [0 for _ in range(self.job_num)]  # 记录job当前task的结束时间
+        machine_task_index_memory = [0 for _ in range(self.machine_num)]
+
+        cycle_check = []  # 检测是否出现循环
+
+        while not all(finished):
+            for i, machine in enumerate(solution):
+                for j in range(machine_task_index_memory[i], len(machine.task_list)):
+                    cur_task = machine.task_list[j]
+                    if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
+                        job_task_index_memory[cur_task.parent_job] += 1
+                        machine_task_index_memory[i] += 1
+                        cycle_check = []
                     else:
-                        job_ids[task.parent_job] = task.injob_index
+                        current_string = f"{cur_task.parent_job}-{cur_task.injob_index}"
+                        if len(cycle_check) == 0:
+                            cycle_check.append(current_string)
+                        else:
+                            if current_string == cycle_check[0]:
+                                raise Exception("ZhaoKe's maker says that There is a loop in this solution vector!!")
+                                # return False
+                            else:
+                                cycle_check.append(current_string)
+                        break
+                if machine_task_index_memory[i] == len(machine.task_list):
+                    finished[i] = True
+                print(finished)
         return True
