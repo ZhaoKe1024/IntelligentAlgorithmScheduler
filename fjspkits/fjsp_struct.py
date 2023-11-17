@@ -16,13 +16,12 @@ class Solution(object):
         self.__machines = machines
         self.__fitness = -1.0
         self.job_num = job_num
+        self.src_value = None
         if (not check) and (machines is not None):
-            fitnesses, _ = calculate_exetime_load(self.__machines, job_num)
-            self.__fitness = max(fitnesses)
-            print("time:", self.__fitness)
-
-    def set_machines(self, machines):
-        self.__machines = machines
+            fitnesses, aligned_machines = calculate_exetime_load(machines, job_num)
+            self.src_value = max(fitnesses)
+            self.__machines = aligned_machines
+            # print("time:", self.__fitness)
 
     def get_machines(self):
         return self.__machines
@@ -33,8 +32,10 @@ class Solution(object):
             return -1.0
         # print(self.__fitness)
         if self.__fitness is None or self.__fitness <= -0.1:
-            fitnesses, _ = calculate_exetime_load(self.__machines, self.job_num)
+            fitnesses, aligned_machines = calculate_exetime_load(self.__machines, self.job_num)
+            self.src_value = max(fitnesses)
             self.__fitness = (max_value-max(fitnesses))/(max_value-min_value)
+            self.__machines = aligned_machines
         return self.__fitness
 
     def set_fitness(self, value):
@@ -56,23 +57,23 @@ class SolutionSortedList(object):
         归一化的原因是，假如是多目标优化，多个目标最好量纲/数量级统一
         由于时间越短越好，和适应度的定义相反，因此采取max-value的公式
         """
-        min_fitness, max_fitness = self.solutions[0].get_fitness(), self.solutions[-1].get_fitness()
+        min_value, max_value = self.solutions[0].src_value, self.solutions[-1].src_value
         # print(min_fitness, max_fitness)
 
-        if max_fitness == min_fitness:
-            if min_fitness <= 0:
+        if max_value == min_value:
+            if min_value <= 0:
                 for s in self.solutions:
-                    s.set_fitness(0)
+                    s.set_fitness(0.0)
             else:
                 for s in self.solutions:
-                    s.set_fitness(min_fitness)
+                    s.set_fitness(min_value)
 
         else:
             for s in self.solutions:
-                s.set_fitness((max_fitness-s.get_fitness()) / (max_fitness - min_fitness))
+                s.set_fitness((max_value-s.src_value) / (max_value - min_value))
 
     def get_max_min_value(self):
-        return self.solutions[-1].get_fitness(), self.solutions[0].get_fitness()
+        return self.solutions[-1].src_value, self.solutions[0].src_value
 
     def add_solution(self, s: Solution, desc=True):
         """有序列表，插入数据采用二分法定位最快，但是现在还没改成二分法，先记一下"""
@@ -85,7 +86,7 @@ class SolutionSortedList(object):
                 else:
                     break
             else:
-                if s.get_fitness() > so.get_fitness():
+                if s.src_value > so.src_value:
                     idx += 1
                 else:
                     break
