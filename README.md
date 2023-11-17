@@ -57,6 +57,14 @@ Not every algorithm has a paper, as some are my own improvement attempts.
 utils/*.py: tools 
 The remaining codes that have not been introduced are utility classes or abandoned code from that year.
 
+### Example
+
+``` python ./JSSP_executor.py ```
+
+``` python ./simulate.py ```
+
+``` python ./GraphAlgorithm ```
+
 
 ### Optimization on Graph
 It mainly optimizes tasks on a Directed Acyclic Graph (DAG), and the most commonly used graph structure is task scheduling.

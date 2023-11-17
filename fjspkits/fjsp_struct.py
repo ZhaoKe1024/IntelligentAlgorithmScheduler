@@ -12,10 +12,14 @@ from fjspkits.fjsp_utils import calculate_exetime_load
 
 
 class Solution(object):
-    def __init__(self, machines, job_num):
+    def __init__(self, machines, job_num, check=True):
         self.__machines = machines
         self.__fitness = -1.0
         self.job_num = job_num
+        if (not check) and (machines is not None):
+            fitnesses, _ = calculate_exetime_load(self.__machines, job_num)
+            self.__fitness = max(fitnesses)
+            print("time:", self.__fitness)
 
     def set_machines(self, machines):
         self.__machines = machines
@@ -23,13 +27,14 @@ class Solution(object):
     def get_machines(self):
         return self.__machines
 
-    def get_fitness(self):
+    def get_fitness(self, max_value=None, min_value=None):
         # print("len of machines:", len(self.__machines))
         if self.__machines is None:
             return -1.0
-        if self.__fitness is None or self.__fitness <= 0.0:
+        # print(self.__fitness)
+        if self.__fitness is None or self.__fitness <= -0.1:
             fitnesses, _ = calculate_exetime_load(self.__machines, self.job_num)
-            self.__fitness = max(fitnesses)
+            self.__fitness = (max_value-max(fitnesses))/(max_value-min_value)
         return self.__fitness
 
     def set_fitness(self, value):
@@ -37,21 +42,25 @@ class Solution(object):
 
 
 class SolutionSortedList(object):
-    """为了优化进化计算中的自然选择算子，用排序列表来组织种群是最好的"""
+    """为了优化进化计算中的自然选择算子，用排序列表来组织种群是最好的
+    desc: 最初的顺序
+    """
 
     def __init__(self, desc=True):
         self.solutions = []
         self.desc = desc
 
     def update_fitness(self):
-        """初始化适应度值
+        """ 更新之后一定是降序
+        初始化适应度值
         归一化的原因是，假如是多目标优化，多个目标最好量纲/数量级统一
         由于时间越短越好，和适应度的定义相反，因此采取max-value的公式
         """
-        max_fitness, min_fitness = self.solutions[-1].get_fitness(), self.solutions[0].get_fitness()
+        min_fitness, max_fitness = self.solutions[0].get_fitness(), self.solutions[-1].get_fitness()
+        # print(min_fitness, max_fitness)
 
         if max_fitness == min_fitness:
-            if min_fitness == 0:
+            if min_fitness <= 0:
                 for s in self.solutions:
                     s.set_fitness(0)
             else:
@@ -60,17 +69,26 @@ class SolutionSortedList(object):
 
         else:
             for s in self.solutions:
-                s.set_fitness((max_fitness - s.get_fitness()) / (max_fitness - min_fitness))
+                s.set_fitness((max_fitness-s.get_fitness()) / (max_fitness - min_fitness))
 
-    def add_solution(self, s: Solution):
+    def get_max_min_value(self):
+        return self.solutions[-1].get_fitness(), self.solutions[0].get_fitness()
+
+    def add_solution(self, s: Solution, desc=True):
         """有序列表，插入数据采用二分法定位最快，但是现在还没改成二分法，先记一下"""
 
         idx = 0
         for so in self.solutions:
-            if s.get_fitness() < so.get_fitness():
-                idx += 1
+            if desc:
+                if s.get_fitness() < so.get_fitness():
+                    idx += 1
+                else:
+                    break
             else:
-                break
+                if s.get_fitness() > so.get_fitness():
+                    idx += 1
+                else:
+                    break
         self.solutions.insert(idx, s)
 
     def get_rand_solution(self) -> Solution:

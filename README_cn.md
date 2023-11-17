@@ -48,6 +48,13 @@ utils/*.py: 工具类[README.md](README.md)
 
 其他以及未介绍的代码都是工具类或者当年的废弃代码
 
+### 测试案例
+``` python ./JSSP_executor.py ```
+
+``` python ./simulate.py ```
+
+``` python ./GraphAlgorithm.py ```
+
 #### 使用说明
 
 1.  实验对象参数有改动，在Entities.py里面修改，例如添加实验属性
