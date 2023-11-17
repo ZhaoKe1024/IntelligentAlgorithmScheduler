@@ -145,7 +145,7 @@ def calculate_exetime_load(machines, job_num=10):
                 # print("machine task index memory:\n", machine_task_index_memory)
                 # print(finished)
 
-                print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
+                # print(f"current: job[{cur_task.parent_job}] Task[{cur_task.injob_index}]")
 
                 if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
                     _, j_time = cur_task.get_target_machine()  # 获取当前task的所在机器和所需时间
@@ -197,7 +197,7 @@ def calculate_exetime_load(machines, job_num=10):
                     break
             if machine_task_index_memory[i] == len(machine.task_list):
                 finished[i] = True
-            print(finished)
+            # print(finished)
 
     res = []  # Total time executed on each machine
     for machine in machines:

@@ -49,15 +49,25 @@ class SolutionSortedList(object):
         由于时间越短越好，和适应度的定义相反，因此采取max-value的公式
         """
         max_fitness, min_fitness = self.solutions[-1].get_fitness(), self.solutions[0].get_fitness()
-        for s in self.solutions:
-            s.set_fitness((max_fitness - s.get_fitness()) / (max_fitness - min_fitness))
+
+        if max_fitness == min_fitness:
+            if min_fitness == 0:
+                for s in self.solutions:
+                    s.set_fitness(0)
+            else:
+                for s in self.solutions:
+                    s.set_fitness(min_fitness)
+
+        else:
+            for s in self.solutions:
+                s.set_fitness((max_fitness - s.get_fitness()) / (max_fitness - min_fitness))
 
     def add_solution(self, s: Solution):
         """有序列表，插入数据采用二分法定位最快，但是现在还没改成二分法，先记一下"""
 
         idx = 0
         for so in self.solutions:
-            if s.get_fitness() > so.get_fitness():
+            if s.get_fitness() < so.get_fitness():
                 idx += 1
             else:
                 break

@@ -27,8 +27,8 @@ class Genetic4FJSP(object):
         print(f"num of job:{len(self.jobs)}, num of machine:{self.machine_num}")
         self.job_num = len(self.jobs)
         # hyperparameters
-        self.population_number = 10
-        self.iter_steps = 4
+        self.population_number = 20
+        self.iter_steps = 8
         # 自己设置的概率，没有依据
         self.c_times_per_step = 1
         self.m_times_per_step = 1
@@ -45,64 +45,84 @@ class Genetic4FJSP(object):
         print("============initialize solution 0===============")
         for i in range(self.population_number):
             self.genes.add_solution(Solution(self.__generate_init_solution(), self.job_num))
+        print(len(self.genes.solutions))
         # self.genes.update_fitness()
         self.best_gene = self.genes.solutions[0]
         results = [self.best_gene.get_fitness()]
-
         # 遗传算法迭代
         for t in range(1, self.iter_steps):
             print(f"---->steps {t}/{self.iter_steps}----")
             # --选择--交叉--变异--产生新解
             # 每个step交叉20次，选择40个新解里面最好的一个保留
             b_gene_c1, b_gene_c2 = Solution(None, self.job_num), Solution(None, self.job_num)
+            add_num = 0
             # b_gene_m = Solution(None, self.job_num)
             print(f"---->steps {t}/{self.iter_steps}----crossover----")
             for k in range(self.c_times_per_step):
                 print(f"---->steps {t}/{self.iter_steps}----crossover{k}/{self.c_times_per_step}----")
                 # 想法：交叉算子不考虑精英策略了吗？
                 tmp1, tmp2 = self.genes.get_rand_solution().get_machines(), self.genes.get_rand_solution().get_machines()
-                for m in tmp1:
-                    print(m)
-                for m in tmp2:
-                    print(m)
-                gene_c1, gene_c2 = self.CrossoverPOX(tmp1,
-                                                     tmp2)
-                print(self.check_toposort(gene_c1.get_machines()))
-                for machine in gene_c1.get_machines():
-                    print(machine)
-                print(self.check_toposort(gene_c2.get_machines()))
-                for machine in gene_c2.get_machines():
-                    print(machine)
-                if gene_c1.get_fitness() > b_gene_c1.get_fitness():
-                    b_gene_c1 = gene_c1
-                if gene_c2.get_fitness() > b_gene_c2.get_fitness():
-                    b_gene_c2 = gene_c2
-            # print(f"---->steps {t}/{self.iter_steps}----mutation----")
-            # tmp = self.genes.get_rand_solution().get_machines()
+                # for m in tmp1:
+                #     print(m)
+                # for m in tmp2:
+                #     print(m)
+                gene_c1, gene_c2 = self.CrossoverPOX(tmp1, tmp2)
+                max_t = 0
+                while max_t < 10:
+                    if not (self.check_toposort(gene_c1.get_machines()) and self.check_toposort(gene_c2.get_machines())):
+                        max_t += 1
+                        gene_c1, gene_c2 = self.CrossoverPOX(tmp1, tmp2)
+                        print("重新交叉")
+                    else:
+                        if gene_c1.get_fitness() > b_gene_c1.get_fitness():
+                            b_gene_c1 = gene_c1
+                            add_num += 1
+                            self.genes.add_solution(b_gene_c1)
+                            print(len(self.genes.solutions))
+                        if gene_c2.get_fitness() > b_gene_c2.get_fitness():
+                            add_num += 1
+                            b_gene_c2 = gene_c2
+                            self.genes.add_solution(b_gene_c2)
+                            print(len(self.genes.solutions))
+                        break
+                # for machine in gene_c1.get_machines():
+                #     print(machine)
+                # for machine in gene_c2.get_machines():
+                #     print(machine)
+            b_gene_m = Solution(None, self.job_num)
+            print(f"---->steps {t}/{self.iter_steps}----mutation----")
+            tmp = self.genes.get_rand_solution().get_machines()
             # for m in tmp:
             #     print(m)
-            # for k in range(self.m_times_per_step):
-            #     print(f"---->steps {t}/{self.iter_steps}----mutation{k}/{self.m_times_per_step}----")
-            #     gene_m = self.mutation(tmp)
-            #     print(self.check_toposort(gene_m.get_machines()))
-            #     for machine in gene_m.get_machines():
-            #         print(machine)
-            #     if gene_m.get_fitness() > b_gene_m.get_fitness():
-            #         b_gene_m = gene_m
+            for k in range(self.m_times_per_step):
+                print(f"---->steps {t}/{self.iter_steps}----mutation{k}/{self.m_times_per_step}----")
+                gene_m = self.mutation(tmp)
+                while True:
+                    if not self.check_toposort(gene_m.get_machines()):
+                        print("重新变异")
+                        gene_m = self.mutation(tmp)
+                    else:
+                        # for machine in gene_m.get_machines():
+                        #     print(machine)
+                        if gene_m.get_fitness() > b_gene_m.get_fitness():
+                            add_num += 1
+                            b_gene_m = gene_m
+                            self.genes.add_solution(b_gene_m)
+                            print(len(self.genes.solutions))
+                        break
             # 更新适应度
             self.genes.update_fitness()
             # 自然选择，替换种群
             print(f"---->steps {t}/{self.iter_steps}----natural selection----")
             selected_genes = self.natural_selection()
-
-            # 添加 变异、交叉、选择的新解
-            for i in range(len(selected_genes)+2):
-                self.genes.solutions.pop()
             for ge in selected_genes:
                 self.genes.add_solution(ge)
-            self.genes.add_solution(b_gene_c1)
-            self.genes.add_solution(b_gene_c2)
-            # self.genes.add_solution(b_gene_m)
+                print(len(self.genes.solutions))
+
+            # 添加 变异、交叉、选择的新解
+            for i in range(len(selected_genes)+add_num):
+                self.genes.solutions.pop()
+                print(len(self.genes.solutions))
             # current best
             self.best_gene = self.genes.solutions[0]
             print(f"---->steps {t}/{self.iter_steps}----best fitness:{self.best_gene.get_fitness()}----")
@@ -269,7 +289,7 @@ class Genetic4FJSP(object):
         这里复现一下单点自交换编译：我自己把它定义为，任选一个机器，把其中的工序调换一下
         用双指针的方法随机调换同一个机器中的两个Job子任务"""
         machine_num = len(s)
-        print("len of mutation solution machines:", machine_num)
+        # print("len of mutation solution machines:", machine_num)
         tar_index = random.randint(0, machine_num-1)
         tar_machine = s[tar_index]
         jobs_list = []
@@ -356,12 +376,12 @@ class Genetic4FJSP(object):
                             cycle_check.append(current_string)
                         else:
                             if current_string == cycle_check[0]:
-                                raise Exception("ZhaoKe's maker says that There is a loop in this solution vector!!")
-                                # return False
+                                # raise Exception("ZhaoKe's maker says that There is a loop in this solution vector!!")
+                                return False
                             else:
                                 cycle_check.append(current_string)
                         break
                 if machine_task_index_memory[i] == len(machine.task_list):
                     finished[i] = True
-                print(finished)
+                # print(finished)
         return True
