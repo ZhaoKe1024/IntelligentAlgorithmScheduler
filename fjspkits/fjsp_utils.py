@@ -176,8 +176,10 @@ def calculate_exetime_load(machines, job_num=10):
                                           job_end_times_memory[cur_task.parent_job])
                             end_t = start_t + j_time
                             # print(f"allocated time 2: job[{cur_task.parent_job}] Task[{cur_task.injob_index}] start:{start_t} ,end{end_t}")
-                    machine.task_list[j].start_time = start_t
-                    machine.task_list[j].finish_time = end_t
+
+                    tmp_task = machine.task_list[j]
+                    tmp_task.set_duration(start_t, end_t)
+                    machine.task_list[j] = tmp_task
                     # 表示当前job的下一个task可以执行了，不需要判断越界，因为machine已经约束
                     job_task_index_memory[cur_task.parent_job] += 1  # 当前job的下一个task能够执行了
                     # 下一个task是否能执行？时间如何allocate？

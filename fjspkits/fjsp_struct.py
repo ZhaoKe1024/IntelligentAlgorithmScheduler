@@ -47,9 +47,9 @@ class SolutionSortedList(object):
     desc: 最初的顺序
     """
 
-    def __init__(self, desc=True):
+    def __init__(self):
         self.solutions = []
-        self.desc = desc
+        # self.desc = desc
 
     def update_fitness(self):
         """ 更新之后一定是降序

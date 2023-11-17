@@ -45,6 +45,10 @@ class Task(object):
         self.target_machine.append(machine_id)
         self.execute_time.append(a_time)
 
+    def set_duration(self, st, en):
+        self.start_time = st
+        self.finish_time = en
+
     def get_target_machine(self):
         if not self.selected_machine:
             i = np.random.randint(len(self.target_machine))
@@ -73,6 +77,9 @@ class Job(object):
 
     def add_task(self, task):
         self.task_list.append(task)
+
+    def clear_index(self):
+        self.cur_index = 0
 
     def full_mask(self):
         self.is_executed = [False for _ in range(len(self.task_list))]

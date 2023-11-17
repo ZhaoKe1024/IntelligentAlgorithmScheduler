@@ -18,7 +18,7 @@ import pandas as pd
 
 from fjspkits.fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
-from fjspkits.fjsp_utils import read_Data_from_file, calculate_exetime_load
+from fjspkits.fjsp_utils import read_Data_from_file
 from utils.plottools import plot_gantt
 
 
@@ -137,28 +137,32 @@ class Genetic4FJSP(object):
         # for m in self.best_gene.get_machines():
         #     print(m)
         print("---------------Optimal!-----------------")
-        print(f"最短完工时间：{self.best_gene.src_value}")
-
-        with open(output_prefix+"_minmakespan.txt", 'w', encoding="utf_8") as fin:
-            fin.write(f"最短完工时间：{self.best_gene.src_value}")
         res_in = open(output_prefix+"_planning.txt", 'w')
+        makespan = 0.0
         for m in self.best_gene.get_machines():
             print(m)
         for machine in self.best_gene.get_machines():
             for task in machine.task_list:
+                makespan = makespan if makespan > task.finish_time else task.finish_time
                 print(f"Task({task.parent_job}-{task.injob_index})"+f"[{task.start_time},{task.finish_time}]", end='||')
                 res_in.write(f"Task({task.parent_job}-{task.injob_index})"+f"[{task.start_time},{task.finish_time}]||")
             print()
             res_in.write('\n')
         # print(f"最大Task数: {self.task_num}")
         res_in.close()
+
+        print(f"最短完工时间：{makespan}")
+
+        with open(output_prefix+"_minmakespan.txt", 'w', encoding="utf_8") as fin:
+            fin.write(f"最短完工时间：{makespan}")
         # ---------------------------Gantt Plot---------------------------------
         # 根据machines得到一个pandas用于绘图
         data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
-        for machine in self.best_gene.get_machines():
+        for idx, machine in enumerate(self.best_gene.get_machines()):
             for task in machine.task_list:
-                data_dict["Machine"][task.global_index] = "M" + str(task.selected_machine)
-                data_dict["Task"][task.global_index] = "Task" + str(task.global_index)
+                # 修改了这个地方的机器编号，因为我发现有时候甘特图和结果对不上，看来是Task的selected_machine有误，没有正确赋值，还需要检查
+                data_dict["Machine"][task.global_index] = "M" + str(idx)
+                data_dict["Task"][task.global_index] = f"Task[{task.parent_job}-{task.injob_index}]"
                 data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
                 data_dict["start_num"][task.global_index] = task.start_time
                 data_dict["end_num"][task.global_index] = task.finish_time
@@ -194,13 +198,13 @@ class Genetic4FJSP(object):
                             m_index = j
                     exe_times = first_task_this_job.execute_time
                     end_time_machines[target_m_idx] += exe_times[m_index]
-                    first_task_this_job.selected_machine = target_m_idx
                     first_task_this_job.selected_time = exe_times[m_index]
+                    first_task_this_job.selected_machine = target_m_idx
                     # print("selected:", target_m_idx)
                     res[target_m_idx].add_task(first_task_this_job)
                     # 修改工件下的工序的选择机器
-                    self.jobs[first_task_this_job.parent_job].task_list[
-                        first_task_this_job.injob_index] = first_task_this_job
+                    # self.jobs[first_task_this_job.parent_job].task_list[
+                    #     first_task_this_job.injob_index] = first_task_this_job
                     # print(f"to machine[{target_m_idx}]", end_time_machines)
 
         # print(f"len of res {len(res)}")
