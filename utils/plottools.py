@@ -216,7 +216,21 @@ def plot_gantt(df, machine_num, fname):
 
 
 if __name__ == '__main__':
-    # path = "../imgs/stackPlot/result0dat.csv"
+    path = "../fjspkits/results/t202311172138_planning.txt"
+
+    data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
+    with open(path, 'r') as fin:
+        line = fin.readline().split("||")[:-1]
+
+        # for idx, machine in enumerate(self.best_gene.get_machines()):
+        #     for task in machine.task_list:
+        #         # 修改了这个地方的机器编号，因为我发现有时候甘特图和结果对不上，看来是Task的selected_machine有误，没有正确赋值，还需要检查
+        #         data_dict["Machine"][task.global_index] = "M" + str(idx)
+        #         data_dict["Task"][task.global_index] = f"Task[{task.parent_job}-{task.injob_index}]"
+        #         data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
+        #         data_dict["start_num"][task.global_index] = task.start_time
+        #         data_dict["end_num"][task.global_index] = task.finish_time
+        #         data_dict["days_start_to_end"][task.global_index] = task.selected_time
     # linePlot(path)
     # stackPlot(path)
     # gantt()
