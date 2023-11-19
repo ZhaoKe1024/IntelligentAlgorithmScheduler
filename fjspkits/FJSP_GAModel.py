@@ -18,25 +18,24 @@ import pandas as pd
 
 from fjspkits.fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
-from fjspkits.fjsp_utils import read_Data_from_file
 from utils.plottools import plot_gantt
 
 
 class Genetic4FJSP(object):
-    def __init__(self, data_file):
+    def __init__(self, jobs, machine_num, task_num):
         # inputs
-        self.jobs, self.machine_num, self.task_num = read_Data_from_file(data_file)
+        self.jobs, self.machine_num, self.task_num = jobs, machine_num, task_num
         print(f"num of job:{len(self.jobs)}, num of machine:{self.machine_num}")
         self.job_num = len(self.jobs)
         # hyperparameters
         self.max_exetime = 9.8
-        self.population_number = 10
-        self.iter_steps = 400
+        self.population_number = 80
+        self.iter_steps = 20
         # 自己设置的概率，没有依据
         self.c_times_per_step = 1
         self.m_times_per_step = 1
-        self.cp = 0.2  # 0.5(1 2) 0.25(3-5) 0.2(6-12) 0.15(13-18) else 0.1
-        self.mp = 0.1  # 1/2 of cp
+        self.cp = 0.8  # 0.5(1 2) 0.25(3-5) 0.2(6-12) 0.15(13-18) else 0.1
+        self.mp = 0.2  # 1/2 of cp
         self.max_select_p = 0.55
         # variables
         self.genes = SolutionSortedList()

@@ -19,11 +19,19 @@ There are order constraints between multiple tasks of each job, and there is no 
 Goal: Allocate all tasks to m machines, meet job order constraints, and minimize execution time.
 """
 # import time
+from fjspkits.fjsp_utils import read_Data_from_file
 from fjspkits.FJSP_GAModel import Genetic4FJSP
 
 
 def run():
-    ga4fjsp = Genetic4FJSP("./datasets/fjsp_sets/brandimarte_mk01.txt")
+    """通过MK01算例的文本获取数据
+    jobs: list<Job>类型
+    machine_num: 解向量(List<Machine>)的长度
+    task_num: 全部工序数，暂时没啥用
+    """
+    jobs, machine_num, task_num = read_Data_from_file("./datasets/fjsp_sets/brandimarte_mk01.txt")
+
+    ga4fjsp = Genetic4FJSP(jobs=jobs, machine_num=machine_num, task_num=task_num)
     ga4fjsp.schedule()
 
 

@@ -22,6 +22,11 @@ class Solution(object):
             self.__machines = aligned_machines
             # print("time:", self.__fitness)
 
+    def vectorize(self):
+        machine_indices = [0]
+        job_indices = []
+
+
     def get_machines(self):
         return self.__machines
 
