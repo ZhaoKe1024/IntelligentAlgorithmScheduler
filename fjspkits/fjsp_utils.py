@@ -202,8 +202,12 @@ def calculate_exetime_load(machines, job_num=10):
             # print(finished)
 
     res = []  # Total time executed on each machine
+    # print("============")
     for machine in machines:
         if len(machine.task_list) == 0:
             continue
         res.append(machine.task_list[-1].finish_time)
-    return res, machines
+    #     print(machine.task_list[-1].finish_time)
+    #     print([item.finish_time for item in machine.task_list])
+    # print(f"======{max(res)}======")
+    return max(res), machines

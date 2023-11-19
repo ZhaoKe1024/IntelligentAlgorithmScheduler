@@ -18,8 +18,7 @@ class Solution(object):
         self.job_num = job_num
         self.src_value = None
         if (not check) and (machines is not None):
-            fitnesses, aligned_machines = calculate_exetime_load(machines, job_num)
-            self.src_value = max(fitnesses)
+            self.src_value, aligned_machines = calculate_exetime_load(machines, job_num)
             self.__machines = aligned_machines
             # print("time:", self.__fitness)
 
@@ -31,10 +30,12 @@ class Solution(object):
         if self.__machines is None:
             return -1.0
         # print(self.__fitness)
-        if self.__fitness is None or self.__fitness <= -0.1:
-            fitnesses, aligned_machines = calculate_exetime_load(self.__machines, self.job_num)
-            self.src_value = max(fitnesses)
-            self.__fitness = (max_value-max(fitnesses))/(max_value-min_value)
+        if self.__fitness <= -0.1:
+            self.src_value, aligned_machines = calculate_exetime_load(self.__machines, self.job_num)
+            if max_value - min_value < 0.00001:
+                self.__fitness = (max_value - self.src_value) / max_value
+            else:
+                self.__fitness = (max_value-self.src_value)/(max_value-min_value)
             self.__machines = aligned_machines
         return self.__fitness
 
@@ -49,6 +50,8 @@ class SolutionSortedList(object):
 
     def __init__(self):
         self.solutions = []
+        self.max_value = None
+        self.min_value = None
         # self.desc = desc
 
     def update_fitness(self):
@@ -58,6 +61,7 @@ class SolutionSortedList(object):
         由于时间越短越好，和适应度的定义相反，因此采取max-value的公式
         """
         min_value, max_value = self.solutions[0].src_value, self.solutions[-1].src_value
+        self.min_value, self.max_value = min_value, max_value
         # print(min_fitness, max_fitness)
 
         if max_value == min_value:
@@ -81,7 +85,7 @@ class SolutionSortedList(object):
         idx = 0
         for so in self.solutions:
             if desc:
-                if s.get_fitness() < so.get_fitness():
+                if s.get_fitness(self.max_value, self.min_value) < so.get_fitness(self.max_value, self.min_value):
                     idx += 1
                 else:
                     break

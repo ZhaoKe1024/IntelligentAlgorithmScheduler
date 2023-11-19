@@ -29,8 +29,9 @@ class Genetic4FJSP(object):
         print(f"num of job:{len(self.jobs)}, num of machine:{self.machine_num}")
         self.job_num = len(self.jobs)
         # hyperparameters
-        self.population_number = 100
-        self.iter_steps = 200
+        self.max_exetime = 9.8
+        self.population_number = 10
+        self.iter_steps = 400
         # 自己设置的概率，没有依据
         self.c_times_per_step = 1
         self.m_times_per_step = 1
@@ -52,13 +53,21 @@ class Genetic4FJSP(object):
         print("初始最短时间：", min_value)
         # 更新适应度，都标准化到0-1
         self.genes.update_fitness()
-        self.best_gene = self.genes.solutions[0]
+        self.best_gene = deepcopy(self.genes.solutions[0])
+        makespan = 0.0
+        for machine in self.best_gene.get_machines():
+            for task in machine.task_list:
+                makespan = makespan if makespan > task.finish_time else task.finish_time
+        print("初始最短时间：", makespan)
         results = [self.best_gene.src_value]
         # 遗传算法迭代
         start_time = time.time()
-        for t in range(1, self.iter_steps):
-            if t % 10 == 0:
-                print(f"---->steps {t}/{self.iter_steps}----")
+        t = -1
+        while (time.time() - start_time) < self.max_exetime:
+        # for t in range(1, self.iter_steps):
+            t += 1
+            if t % 50 == 0:
+                print(f"---->steps {t}---- optimal: {self.best_gene.src_value}----")
             # --选择--交叉--变异--产生新解
             # 每个step交叉20次，选择40个新解里面最好的一个保留
             b_gene_c1, b_gene_c2 = Solution(None, self.job_num), Solution(None, self.job_num)
@@ -109,18 +118,23 @@ class Genetic4FJSP(object):
             # self.genes.update_fitness()
             # 自然选择，替换种群
             # print(f"---->steps {t}/{self.iter_steps}----natural selection----")
-            selected_genes = self.natural_selection()
-            for ge in selected_genes:
-                self.genes.add_solution(ge)
-                # print(len(self.genes.solutions))
-
             # 添加 变异、交叉、选择的新解
-            for i in range(len(selected_genes)+add_num):
+            for i in range(add_num):
                 self.genes.solutions.pop()
+            selected_genes = self.natural_selection()
+            # =============这一改动让算法性能提升了，但是也变慢了，为什么会变慢？是pop操作很慢吗？毕竟是o(N)操作？===============
+            for i in selected_genes[::-1]:
+                self.genes.solutions.pop(i)
+                # print(len(self.genes.solutions))
+            for _ in selected_genes:
+                self.genes.add_solution(Solution(self.__generate_init_solution(), self.job_num, check=False), desc=False)
+            # ==============================================================
             # print(f"{t}/{self.iter_steps}  best fitness: {self.best_gene.get_fitness()}")
-            self.best_gene = self.genes.solutions[0]
+            if self.genes.solutions[0].src_value < self.best_gene.src_value:
+                self.best_gene = deepcopy(self.genes.solutions[0])
             # print(f"---->steps {t}/{self.iter_steps}----best fitness:{self.best_gene.get_fitness()}----")
             results.append(self.best_gene.src_value)
+            self.genes.update_fitness()
         print(f"算法运行时间：{str(timedelta(seconds=(time.time() - start_time)))}")
         output_prefix = "fjspkits/results/t"+time.strftime("%Y%m%d%H%M", time.localtime())
         print(results)
@@ -338,10 +352,10 @@ class Genetic4FJSP(object):
         :return:
         """
         res = []
-        for so in self.genes.solutions:
-            tmp_threshold = self.max_select_p*so.get_fitness()
-            if random.random() < tmp_threshold:
-                res.append(so)
+        for idx, so in enumerate(self.genes.solutions):
+            tmp_threshold = self.max_select_p*so.get_fitness(self.genes.max_value, self.genes.min_value)
+            if random.random() > tmp_threshold:
+                res.append(idx)
         # local_best = self.genes.solutions[-1]
         return res
 
