@@ -7,11 +7,16 @@ This repository provides two models currently.
 
 1. Solving FJSP using Intelligent Algorithm, and draw gantt plot.
 
-![t202311191131_gantt.png](t202311191131_gantt.png)
+``` python ./JSSP_executor.py ```
+
+![](t202311201228_gantt.png)
+
+![](t202311201228_iterplot.png)
 
 2. This project is dedicated to solving cloud computing scheduling problems using intelligent algorithms. It can replace evaluation functions, plot and store results and charts. It should be noted that all are discrete scheduling problems, which means that all particle swarm optimization algorithms are discrete particle swarm optimization algorithms.
 In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem are developing.
 
+``` python ./simulate.py ```
 
 # Code Structure
 ```

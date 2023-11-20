@@ -8,17 +8,14 @@
 
 """
 import random
-from copy import copy, deepcopy
+from copy import deepcopy
 import time
 from datetime import timedelta
 
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 
 from fjspkits.fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
-from utils.plottools import plot_gantt
 
 
 class Genetic4FJSP(object):
@@ -135,53 +132,7 @@ class Genetic4FJSP(object):
             results.append(self.best_gene.src_value)
             self.genes.update_fitness()
         print(f"算法运行时间：{str(timedelta(seconds=(time.time() - start_time)))}")
-        output_prefix = "fjspkits/results/t"+time.strftime("%Y%m%d%H%M", time.localtime())
-        print(results)
-        np.savetxt(output_prefix+"_itervalues.txt", results, fmt='%.18e', delimiter=',', newline='\n')
-
-        plt.figure(0)
-        plt.plot(results, c='black')
-        plt.xlabel("step")
-        plt.ylabel("fitness")
-        plt.grid()
-        plt.savefig(output_prefix+"_iterplot.png", dpi=300, format='png')
-        plt.close()
-
-        # for m in self.best_gene.get_machines():
-        #     print(m)
-        print("---------------Optimal!-----------------")
-        res_in = open(output_prefix+"_planning.txt", 'w')
-        makespan = 0.0
-        for m in self.best_gene.get_machines():
-            print(m)
-        for machine in self.best_gene.get_machines():
-            for task in machine.task_list:
-                makespan = makespan if makespan > task.finish_time else task.finish_time
-                print(f"Task({task.parent_job}-{task.injob_index})"+f"[{task.start_time},{task.finish_time}]", end='||')
-                res_in.write(f"Task({task.parent_job}-{task.injob_index})"+f"[{task.start_time},{task.finish_time}]||")
-            print()
-            res_in.write('\n')
-        # print(f"最大Task数: {self.task_num}")
-        res_in.close()
-
-        print(f"最短完工时间：{makespan}")
-
-        with open(output_prefix+"_minmakespan.txt", 'w', encoding="utf_8") as fin:
-            fin.write(f"最短完工时间：{makespan}")
-        # ---------------------------Gantt Plot---------------------------------
-        # 根据machines得到一个pandas用于绘图
-        data_dict = {"Task": {}, "Machine": {}, "Job": {}, "start_num": {}, "end_num": {}, "days_start_to_end": {}}
-        for idx, machine in enumerate(self.best_gene.get_machines()):
-            for task in machine.task_list:
-                # 修改了这个地方的机器编号，因为我发现有时候甘特图和结果对不上，看来是Task的selected_machine有误，没有正确赋值，还需要检查
-                data_dict["Machine"][task.global_index] = "M" + str(idx)
-                data_dict["Task"][task.global_index] = f"Task[{task.parent_job}-{task.injob_index}]"
-                data_dict["Job"][task.global_index] = "Job" + str(task.parent_job)
-                data_dict["start_num"][task.global_index] = task.start_time
-                data_dict["end_num"][task.global_index] = task.finish_time
-                data_dict["days_start_to_end"][task.global_index] = task.selected_time
-        df = pd.DataFrame(data_dict)
-        plot_gantt(df, self.machine_num, fname=output_prefix+"_gantt.png")
+        return self.best_gene, results
 
     def __generate_init_solution(self):
         """贪心算法初始化，让时间更紧凑（负载均衡并不好用，因为有前后约束，总会有时间浪费，利用率很难提高）"""
