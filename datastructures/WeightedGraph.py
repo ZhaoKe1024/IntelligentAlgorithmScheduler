@@ -28,11 +28,11 @@ class EdgeReward(object):
 
 Q = np.zeros((6, 6))
 R_list = [StateVertex(0, [EdgeReward(0, 4, 0)]),
-          StateVertex(0, [EdgeReward(1, 3, 0), EdgeReward(1, 5, 100)]),
-          StateVertex(0, [EdgeReward(2, 3, 0)]),
-          StateVertex(0, [EdgeReward(3, 1, 0), EdgeReward(3, 2, 0), EdgeReward(3, 4, 0)]),
-          StateVertex(0, [EdgeReward(4, 0, 0), EdgeReward(4, 3, 0), EdgeReward(4, 5, 100)]),
-          StateVertex(0, [EdgeReward(5, 1, 0), EdgeReward(5, 4, 0), EdgeReward(5, 5, 100)])]
+          StateVertex(1, [EdgeReward(1, 3, 0), EdgeReward(1, 5, 100)]),
+          StateVertex(2, [EdgeReward(2, 3, 0)]),
+          StateVertex(3, [EdgeReward(3, 1, 0), EdgeReward(3, 2, 0), EdgeReward(3, 4, 0)]),
+          StateVertex(4, [EdgeReward(4, 0, 0), EdgeReward(4, 3, 0), EdgeReward(4, 5, 100)]),
+          StateVertex(5, [EdgeReward(5, 1, 0), EdgeReward(5, 4, 0), EdgeReward(5, 5, 100)])]
 
 gamma = 0.8
 # for rew in R_list:

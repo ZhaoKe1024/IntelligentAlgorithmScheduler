@@ -26,7 +26,6 @@ class Solution(object):
         machine_indices = [0]
         job_indices = []
 
-
     def get_machines(self):
         return self.__machines
 
