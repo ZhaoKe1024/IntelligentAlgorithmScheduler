@@ -14,6 +14,7 @@ from fjspkits.fjsp_entities import Machine, Job, Task
 def read_Data_from_file(file_path):
     with open(file_path) as fin:
         first_line = fin.readline().strip().split(' ')
+        # print(first_line)
         job_num = int(first_line[0])
         machine_num = int(first_line[1])
 
@@ -22,6 +23,7 @@ def read_Data_from_file(file_path):
         line = fin.readline()
         jobs = [Job(i) for i in range(job_num)]
         while line:
+            print(line.strip().split(' '))
             parts = [int(s) for s in line.strip().split(' ')]
             part_index = 1
             injob_index = 0

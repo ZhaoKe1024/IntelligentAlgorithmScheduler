@@ -10,7 +10,7 @@ from collections import deque, namedtuple
 
 
 Transition = namedtuple('Transition', ('state', 'action', 'reward', 'next_state'))
-TD_ERROR_EPSILON = 0.0001  # 오차에 더해줄 바이어스
+TD_ERROR_EPSILON = 0.0001
 
 
 class ReplayMemory(object):

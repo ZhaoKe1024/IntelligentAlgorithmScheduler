@@ -18,6 +18,8 @@ A workshop has m machines, n jobs, and each job has multiple tasks. Each task ha
 There are order constraints between multiple tasks of each job, and there is no dependency relationship between different jobs.
 Goal: Allocate all tasks to m machines, meet job order constraints, and minimize execution time.
 """
+import os
+
 import numpy as np
 import pandas as pd
 import time
@@ -33,11 +35,13 @@ def run():
     machine_num: 解向量(List<Machine>)的长度
     task_num: 全部工序数，暂时没啥用
     """
-    jobs, machine_num, task_num = read_Data_from_file("./datasets/fjsp_sets/brandimarte_mk01.txt")
+    jobs, machine_num, task_num = read_Data_from_file("./datasets/fjsp_sets/brandimarte_mk03.txt")
 
     ga4fjsp = Genetic4FJSP(jobs=jobs, machine_num=machine_num, task_num=task_num)
     best_gene, results = ga4fjsp.schedule()
-    output_prefix = "fjspkits/results/mk01/t" + time.strftime("%Y%m%d%H%M", time.localtime())
+    if not os.path.exists("fjspkits/results/mk03"):
+        os.mkdir("fjspkits/results/mk03")
+    output_prefix = "fjspkits/results/mk03/t" + time.strftime("%Y%m%d%H%M", time.localtime())
     print(results)
     np.savetxt(output_prefix + "_itervalues.txt", results, fmt='%.18e', delimiter=',', newline='\n')
 

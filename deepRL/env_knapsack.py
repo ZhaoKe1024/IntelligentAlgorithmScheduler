@@ -8,7 +8,7 @@ import random
 import numpy as np
 
 SEED = 1004
-random.seed(SEED)  # 랜덤 시드 고정
+random.seed(SEED)
 np.random.seed(SEED)
 
 

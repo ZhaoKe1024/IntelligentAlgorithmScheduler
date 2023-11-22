@@ -18,6 +18,10 @@ In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem 
 
 ``` python ./simulate.py ```
 
+3. Deep Learning Method (DQN) for binary Knapsack Problem
+
+``` python ./deepRL/dqn4knapsack.py```
+
 # Code Structure
 ```
 root

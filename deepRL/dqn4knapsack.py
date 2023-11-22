@@ -6,11 +6,13 @@
 # @Software: PyCharm
 import matplotlib.pyplot as plt
 from deepRL.DQNTrainer import DQNTrainer
+from deepRL.A2CTrainer import A2CTrainer
+from deepRL.PPOTrainer import PPOTrainer
 
 
 if __name__ == '__main__':
-    trainer = DQNTrainer()
-    is_train = False
+    trainer = PPOTrainer()
+    is_train = True
     if is_train:
         trainer.train()
         # np.save('DQN.npy', score_history)
