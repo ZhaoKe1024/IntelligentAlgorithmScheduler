@@ -16,7 +16,9 @@
 # 顶点表示事件活动，顶点记录时间
 # 拓扑排序
 """
+import random
 from collections import deque
+from copy import copy
 
 """
 关键路径求解，关键是求解每个活动的“最早开始时间”和“最晚开始时间”，两者相等就代表是关键活动
@@ -30,7 +32,6 @@ class ActivityNetwork(object):
     def __init__(self, vertex_list, edges):
         self.vertex_list = vertex_list
 
-        self.__que = deque()
         self.__in_degree_list = [0 for _ in range(len(vertex_list))]
         self.__out_degree_list = [0 for _ in range(len(vertex_list))]
 
@@ -52,24 +53,31 @@ class ActivityNetwork(object):
         self.topological_set = []
 
     # 返回一个拓扑序列
-    def topological_sort_single(self):
+    def topological_sort_rand(self):
+        que = list()
         V = len(self.vertex_list)
+        in_degree_list = copy(self.__in_degree_list)
+        marked = [False for _ in self.vertex_list]
         # print("count of vertex:", V)
         for i in range(V):
-            if self.__in_degree_list[i] == 0:
-                self.__que.append(self.vertex_list[i])
+            if in_degree_list[i] == 0:
+                que.append(self.vertex_list[i])
+                marked[i] = True
         res = []
-        count = 0
-        while len(self.__que) > 0:
-            v = self.__que.popleft()
+        while len(que) > 0:
+            ri = random.randint(0, len(que)-1)
+            v = que[ri]
+            que.pop(ri)
             # print(v)
             res.append(v)
-            count += 1
-            self.__traverse_apply(v.index)
-        if count < V:
-            return res
-        else:
-            return res
+            ind = v.index
+            for ver in self.post_list[ind]:
+                in_degree_list[ver.index] -= 1
+            for i in range(V):
+                if in_degree_list[i] == 0 and not marked[i]:
+                    que.append(self.vertex_list[i])
+                    marked[i] = True
+        return res
 
     """
     按照拓扑序

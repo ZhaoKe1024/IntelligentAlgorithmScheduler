@@ -14,28 +14,18 @@ def AOV_example():
     edges = []
     with open("datasets/graph_example/dag1.txt") as fi:
         line = fi.readline()
+        idx = 0
         while line:
             parts = line.strip().split(',')
             indices.add(int(parts[0]))
             indices.add(int(parts[1]))
-            edges.append(Edge(int(parts[0]), int(parts[1]), int(parts[2])))
+            edges.append(Edge(edge_id=idx, pre=int(parts[0]), post=int(parts[1]), weight=int(parts[2])))
             line = fi.readline()
+            idx += 1
     vertices1 = [Vertex(i, chr(65 + i)) for i in indices]
-
-    for edge in edges:
-        print(f"{edge.pre_v},{edge.post_v},{edge.weight}")
     graph = ActivityNetwork(vertices1, edges)
-    all_topo_orders = graph.topological_sort_all()
-
-    path1 = [0, 3, 1, 2, 5, 4, 7, 6, 8]
-    print("is it path topological ordered:")
-    print(graph.check_path(path1))
-    # path2 = [1, 2, 3, 0, 5, 6, 4, 7, 8]
-    # print(graph.check_path(path2))
-    print("all topological order of this DAG:")
-    for topo in all_topo_orders:
-        print([ver.index for ver in topo])
-        # print(graph.check_path([ver.index for ver in topo]))
+    single_topo_orders = graph.topological_sort_rand()
+    print([ver.index for ver in single_topo_orders])
 
 
 def AOE_example():
@@ -65,7 +55,3 @@ def AOE_example():
 if __name__ == '__main__':
     print("-------AOV---------")
     AOV_example()
-    print("----AOE--------")
-    AOE_example()
-
-    # print(list(range(9, 0, -1)))
