@@ -12,9 +12,9 @@ from torch import optim
 import torch.nn as nn
 import torch.nn.functional as F
 
-from deepRL.A2CModules import RolloutStorage
-from deepRL.A2CNetwork import ValueNetwork, PolicyNetwork
-from deepRL.env_knapsack import KnapsackEnv
+from deepRL.framework1.A2CModules import RolloutStorage
+from deepRL.framework1.A2CNetwork import ValueNetwork, PolicyNetwork
+from deepRL.framework1.env_knapsack import KnapsackEnv
 
 
 class A2CTrainer(object):

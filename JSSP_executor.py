@@ -17,6 +17,11 @@ with one file containing all.
 A workshop has m machines, n jobs, and each job has multiple tasks. Each task has multiple machines to choose from, and the execution time varies.
 There are order constraints between multiple tasks of each job, and there is no dependency relationship between different jobs.
 Goal: Allocate all tasks to m machines, meet job order constraints, and minimize execution time.
+
+#10个问题的最优解区间
+IDEAL_TIME = {'MK01': (36, 42), 'MK02': (24, 32), 'MK03': (204, 211), 'MK04': (48, 81), 'MK05': (168, 186), 'MK06': (33, 86), 'MK07': (133, 157), 'MK08': (523, 523), 'MK09': (299, 369), 'MK10': (165, 296)}
+BEST_TIME = {'MK01': 40, 'MK02': 26, 'MK03': 204, 'MK04': 60, 'MK05': 171, 'MK06': 57, 'MK07': 139, 'MK08': 523, 'MK09': 307, 'MK10': (165, 296)}
+
 """
 import os
 

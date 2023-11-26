@@ -5,9 +5,7 @@
 # @File : dqn4knapsack.py
 # @Software: PyCharm
 import matplotlib.pyplot as plt
-from deepRL.DQNTrainer import DQNTrainer
-from deepRL.A2CTrainer import A2CTrainer
-from deepRL.PPOTrainer import PPOTrainer
+from deepRL.framework1.PPOTrainer import PPOTrainer
 
 
 if __name__ == '__main__':

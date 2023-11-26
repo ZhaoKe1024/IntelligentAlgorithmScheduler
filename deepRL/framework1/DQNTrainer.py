@@ -5,7 +5,6 @@
 # @File : DQNTrainer.py
 # @Software: PyCharm
 import math
-import os.path
 import random
 import numpy as np
 from collections import deque
@@ -13,9 +12,9 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 from BaseTrainer import BaseTrainer
-from deepRL.env_knapsack import KnapsackEnv
-from deepRL.DQNModules import ReplayMemory, PrioritizedMemory
-from deepRL.DQNetwork import DQN
+from deepRL.framework1.env_knapsack import KnapsackEnv
+from deepRL.framework1.DQNModules import ReplayMemory, PrioritizedMemory
+from deepRL.framework1.DQNetwork import DQN
 
 # https://github.com/dayoung08/lab/blob/f5e2ec66c5f2a6e1965428b06eff9dcc7c7a595d/DRL/01knapsack-value_based(DQN%2CDDQN%2CD3QN).ipynb#L209
 
