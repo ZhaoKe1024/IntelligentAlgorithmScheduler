@@ -10,7 +10,8 @@ from typing import Tuple, Union
 from torch import Tensor
 from torch.nn.utils import clip_grad_norm_
 
-from elegantrl.train import Config, ReplayBuffer
+from deepRL.framework2.config import Config
+from deepRL.framework2.replay_buffer import ReplayBuffer
 
 
 class AgentBase:

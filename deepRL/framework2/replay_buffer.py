@@ -9,7 +9,6 @@ import math
 import torch
 from typing import Tuple
 from torch import Tensor
-
 from config import Config
 
 
