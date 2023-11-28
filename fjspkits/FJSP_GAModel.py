@@ -142,34 +142,34 @@ class Genetic4FJSP(object):
         end_time_machines = [0 for _ in range(self.machine_num)]
         jobs_tmp = deepcopy(self.jobs)
         while len(jobs_tmp) > 0:
-            for i in range(len(jobs_tmp)):
+            # for _ in range(len(jobs_tmp)):
                 # print(len(jobs_tmp))
-                select_job_index = np.random.randint(len(jobs_tmp))
-                # print(select_job_index)
-                if jobs_tmp[select_job_index].is_finished():
-                    jobs_tmp.pop(select_job_index)
-                else:
-                    first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
-                    # 在可选机器中，选一个时间结束最早的机器；或者另一种策略：在可选机器中，选一个用时最少的机器
-                    target_machines = first_task_this_job.target_machine  # list of optional machines
-                    target_m_idx = target_machines[0]
-                    target_end_time = end_time_machines[target_m_idx]
-                    m_index = 0
-                    for j, m_idx in enumerate(target_machines):
-                        if target_end_time > end_time_machines[m_idx]:
-                            target_m_idx = m_idx
-                            target_end_time = end_time_machines[m_idx]
-                            m_index = j
-                    exe_times = first_task_this_job.execute_time
-                    end_time_machines[target_m_idx] += exe_times[m_index]
-                    first_task_this_job.selected_time = exe_times[m_index]
-                    first_task_this_job.selected_machine = target_m_idx
-                    # print("selected:", target_m_idx)
-                    res[target_m_idx].add_task(first_task_this_job)
-                    # 修改工件下的工序的选择机器
-                    # self.jobs[first_task_this_job.parent_job].task_list[
-                    #     first_task_this_job.injob_index] = first_task_this_job
-                    # print(f"to machine[{target_m_idx}]", end_time_machines)
+            select_job_index = np.random.randint(len(jobs_tmp))
+            # print(select_job_index)
+            if jobs_tmp[select_job_index].is_finished():
+                jobs_tmp.pop(select_job_index)
+            else:
+                first_task_this_job = jobs_tmp[select_job_index].give_task_to_machine()
+                # 在可选机器中，选一个时间结束最早的机器；或者另一种策略：在可选机器中，选一个用时最少的机器
+                target_machines = first_task_this_job.target_machine  # list of optional machines
+                target_m_idx = target_machines[0]
+                target_end_time = end_time_machines[target_m_idx]
+                m_index = 0
+                for j, m_idx in enumerate(target_machines):
+                    if target_end_time > end_time_machines[m_idx]:
+                        target_m_idx = m_idx
+                        target_end_time = end_time_machines[m_idx]
+                        m_index = j
+                exe_times = first_task_this_job.execute_time
+                end_time_machines[target_m_idx] += exe_times[m_index]
+                first_task_this_job.selected_time = exe_times[m_index]
+                first_task_this_job.selected_machine = target_m_idx
+                # print("selected:", target_m_idx)
+                res[target_m_idx].add_task(first_task_this_job)
+                # 修改工件下的工序的选择机器
+                # self.jobs[first_task_this_job.parent_job].task_list[
+                #     first_task_this_job.injob_index] = first_task_this_job
+                # print(f"to machine[{target_m_idx}]", end_time_machines)
 
         # print(f"len of res {len(res)}")
         # for machine in res:

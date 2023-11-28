@@ -11,6 +11,31 @@ import numpy as np
 from fjspkits.fjsp_entities import Machine, Job, Task
 
 
+def read_Data_3dgraph():
+    json_path = "../datasets/fjsp_sets/sjslhba9.json"
+    json_dict = None
+    jobs = []
+    machines = []
+    task_cnt = 0
+    with open(json_path, 'r', encoding='utf_8') as fp:
+        json_dict = json.load(fp)
+        for item in json_dict["job_list"]:
+            # print(item)
+            job_tmp = Job(item["jid"]-1)
+            for ope in item["o_list"]:
+                task_tmp = Task(task_cnt, item["jid"]-1, ope["oid"]-1)
+                for option in ope["m_list"]:
+                    task_tmp.add_four_tuple(*option)
+                task_tmp.target_machine = [item-1 for item in task_tmp.target_machine]
+                job_tmp.add_task(task_tmp)
+            jobs.append(job_tmp)
+        for idx, time_list in enumerate(json_dict["trans"]):
+            machines.append(Machine(idx, time_list))
+        for service in json_dict["calendar"]:
+            [machines[service["m_id"]].add_service(s) for s in service["services"]]
+    return jobs, machines
+
+
 def read_Data_from_file(file_path):
     with open(file_path) as fin:
         first_line = fin.readline().strip().split(' ')
@@ -213,3 +238,17 @@ def calculate_exetime_load(machines, job_num=10):
     #     print([item.finish_time for item in machine.task_list])
     # print(f"======{max(res)}======")
     return max(res), machines
+
+
+if __name__ == '__main__':
+    jobs, machines = read_Data_3dgraph()
+    for job in jobs:
+        for tsk in job.task_list:
+            print(tsk.target_machine)
+            print(tsk.machine_prior)
+            print(tsk.prepare_time)
+            print(tsk.execute_time)
+    for ma in machines:
+        print(ma.services)
+        print(ma.trans_time)
+
