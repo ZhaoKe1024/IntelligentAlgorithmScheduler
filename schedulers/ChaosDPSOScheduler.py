@@ -2,8 +2,8 @@
 # @Author : ZhaoKe
 # @Time : 2021-04-22 8:05
 import numpy as np
-from utils.Entities import calculate_fitness
-from utils.functions import logistic_function
+from eautils.Entities import calculate_fitness
+from eautils.functions import logistic_function
 from matplotlib import pyplot as plt
 from schedulers.DPSOTaskScheduling import DParticle
 

@@ -2,8 +2,8 @@
 # @Author : ZhaoKe
 # @Time : 2021-03-21 10:43
 import numpy as np
-from utils.Entities import calculate_fitness
-from deprecated.solution_struct import SimpleSolution, SimpleSolutionGenerator
+from eautils.Entities import calculate_fitness
+from eautils.solution_struct import SimpleSolution, SimpleSolutionGenerator
 
 
 class GAScheduler:

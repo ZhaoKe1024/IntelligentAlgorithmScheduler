@@ -78,8 +78,8 @@ class Task(object):
         if not self.selected_machine:
             i = np.random.randint(len(self.target_machine))
             self.selected_machine = self.target_machine[i]
-            # self.selected_time = self.execute_time[i]
-        return self.selected_machine, self.execute_time[self.selected_machine]
+            self.selected_time = self.execute_time[i]
+        return self.selected_machine, self.selected_time
 
     def get_rand_machine(self):
         i = np.random.randint(len(self.target_machine))

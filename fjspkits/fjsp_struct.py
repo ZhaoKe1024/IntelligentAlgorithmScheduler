@@ -23,6 +23,7 @@ class Solution(object):
             # print("time:", self.__fitness)
 
     def vectorize(self):
+        length = sum([len(m.task_list) for m in self.__machines])
         machine_indices = [0]
         job_indices = []
 

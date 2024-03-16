@@ -18,6 +18,44 @@ from fjspkits.fjsp_struct import Solution, SolutionSortedList
 from fjspkits.fjsp_entities import Machine
 
 
+def check_toposort(solution, job_num, machine_num) -> bool:
+    """验证一个解是否符合拓扑序，
+    事实证明，”依次验证每一个machine上的task list，在各自job内是否有序即可,“完全是不行的
+    还是要用n指针来做
+    """
+    finished = [False for _ in range(len(solution))]  # 是否全部执行完毕
+
+    job_task_index_memory = [0 for _ in range(job_num)]  # 每个job当前执行到哪个task了
+    # job_end_times_memory = [0 for _ in range(self.job_num)]  # 记录job当前task的结束时间
+    machine_task_index_memory = [0 for _ in range(machine_num)]
+
+    cycle_check = []  # 检测是否出现循环
+
+    while not all(finished):
+        for i, machine in enumerate(solution):
+            for j in range(machine_task_index_memory[i], len(machine.task_list)):
+                cur_task = machine.task_list[j]
+                if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
+                    job_task_index_memory[cur_task.parent_job] += 1
+                    machine_task_index_memory[i] += 1
+                    cycle_check = []
+                else:
+                    current_string = f"{cur_task.parent_job}-{cur_task.injob_index}"
+                    if len(cycle_check) == 0:
+                        cycle_check.append(current_string)
+                    else:
+                        if current_string == cycle_check[0]:
+                            # raise Exception("ZhaoKe's maker says that There is a loop in this solution vector!!")
+                            return False
+                        else:
+                            cycle_check.append(current_string)
+                    break
+            if machine_task_index_memory[i] == len(machine.task_list):
+                finished[i] = True
+            # print(finished)
+    return True
+
+
 class Genetic4FJSP(object):
     def __init__(self, jobs, machine_num, task_num):
         # inputs
@@ -75,7 +113,7 @@ class Genetic4FJSP(object):
                 gene_c1, gene_c2 = self.CrossoverPOX(tmp1, tmp2)
                 max_t = 0
                 while max_t < 10:
-                    if not (self.check_toposort(gene_c1.get_machines()) and self.check_toposort(gene_c2.get_machines())):
+                    if not (check_toposort(gene_c1.get_machines(), self.job_num, self.machine_num) and check_toposort(gene_c2.get_machines(), self.job_num, self.machine_num)):
                         max_t += 1
                         gene_c1, gene_c2 = self.CrossoverPOX(tmp1, tmp2)
                         # print("重新交叉")
@@ -98,7 +136,7 @@ class Genetic4FJSP(object):
                 # print(f"---->steps {t}/{self.iter_steps}----mutation{k}/{self.m_times_per_step}----")
                 gene_m = self.mutation(tmp)
                 while True:
-                    if not self.check_toposort(gene_m.get_machines()):
+                    if not check_toposort(gene_m.get_machines(), self.job_num, self.machine_num):
                         # print("重新变异")
                         gene_m = self.mutation(tmp)
                     else:
@@ -308,40 +346,3 @@ class Genetic4FJSP(object):
                 res.append(idx)
         # local_best = self.genes.solutions[-1]
         return res
-
-    def check_toposort(self, solution) -> bool:
-        """验证一个解是否符合拓扑序，
-        事实证明，”依次验证每一个machine上的task list，在各自job内是否有序即可,“完全是不行的
-        还是要用n指针来做
-        """
-        finished = [False for _ in range(len(solution))]  # 是否全部执行完毕
-
-        job_task_index_memory = [0 for _ in range(self.job_num)]  # 每个job当前执行到哪个task了
-        # job_end_times_memory = [0 for _ in range(self.job_num)]  # 记录job当前task的结束时间
-        machine_task_index_memory = [0 for _ in range(self.machine_num)]
-
-        cycle_check = []  # 检测是否出现循环
-
-        while not all(finished):
-            for i, machine in enumerate(solution):
-                for j in range(machine_task_index_memory[i], len(machine.task_list)):
-                    cur_task = machine.task_list[j]
-                    if cur_task.injob_index == job_task_index_memory[cur_task.parent_job]:
-                        job_task_index_memory[cur_task.parent_job] += 1
-                        machine_task_index_memory[i] += 1
-                        cycle_check = []
-                    else:
-                        current_string = f"{cur_task.parent_job}-{cur_task.injob_index}"
-                        if len(cycle_check) == 0:
-                            cycle_check.append(current_string)
-                        else:
-                            if current_string == cycle_check[0]:
-                                # raise Exception("ZhaoKe's maker says that There is a loop in this solution vector!!")
-                                return False
-                            else:
-                                cycle_check.append(current_string)
-                        break
-                if machine_task_index_memory[i] == len(machine.task_list):
-                    finished[i] = True
-                # print(finished)
-        return True

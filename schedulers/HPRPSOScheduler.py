@@ -5,9 +5,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from utils.Entities import calculate_fitness
-from utils.dataExamples import get_data_r2n3c12
-from utils.AlgorithmEntities import DParticle
+from eautils.Entities import calculate_fitness
+from eautils.dataExamples import get_data_r2n3c12
+from eautils.AlgorithmEntities import DParticle
 
 
 class HPRPSO:

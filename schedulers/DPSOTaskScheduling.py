@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from utils.Entities import calculate_fitness
-from utils.AlgorithmEntities import DParticle
+from eautils.Entities import calculate_fitness
+from eautils.AlgorithmEntities import DParticle
 
 
 class DPSO:

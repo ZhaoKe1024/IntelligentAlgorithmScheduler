@@ -18,18 +18,10 @@ In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem 
 
 ``` python ./simulate.py ```
 
-3. Deep Learning Method (DQN) for binary Knapsack Problem
-
-``` python ./deepRL/dqn4knapsack.py```
-
 # Code Structure
 ```
 root
 └─JSSP_executor.py
-└─fjspkits/
-│    └─fjsp_entities.py: Definition of Job, Task, Machine
-│    └─fjsp_utils.py: Definition of some functions such as: read_file, calculate execute time.
-│    └─FJSP_GAModel.py: A highly optimized algorithm of genetic algorithm based on POX Crossover for FJSP model.
 └─simulate.py: For Cloud Scheduling, This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
 └─schedulers/
 │    └─GAScheduler.py, Genetic Algorithms to Cloud Service Scheduling.
@@ -41,10 +33,6 @@ root
 └─utils/
 │    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).
 │    └─plottools.py: some functions for plotting, such gantt plot.
-└─GraphAlgorithm.py: AOE and AOV algorithm, such as critical path, topological sorting.
-└─datastructure/
-│    └─ActivityGraph.py: Definition of AOE(activities on Edges) and AOV(activities on Vertices) Model.
-│    └─ *.py: Definitions of Entities or basic datastructures for Graph Model.
 └─SchedulerScaleandFitness.py: This file is used to compare the optimal solutions of multiple algorithms and their convergence curves.
 └─Schedulers.py: Similar to the above, it includes comparative experiments for different groups.
 └─chaosTest.py: Similar to the above, it includes comparative experiments for different groups.
@@ -73,21 +61,6 @@ The remaining codes that have not been introduced are utility classes or abandon
 ``` python ./JSSP_executor.py ```
 
 ``` python ./simulate.py ```
-
-``` python ./GraphAlgorithm ```
-
-
-### Optimization on Graph
-It mainly optimizes tasks on a Directed Acyclic Graph (DAG), and the most commonly used graph structure is task scheduling.
-- ./GraphAlgorithm.py
-- ./datastructure/ActivityGraph.py : Implementation of AOE and AOV(Activity on Vertex).
-- ./datasets/graph_example/*.txt
-
-### Topological Sorting
-ActivityGraph.py : Implementing the AOV(Activity on Vertex) and AOE(Activity on Edge) Graph Model, and provides follow functions:
-- AOV.topological_sort_all(self): Topological sorting of the graph.
-- AOV.check_path(self, path)：determining whether a given array is a topological order (subsequence not implemented yet).
-- AOE.critical_path(self): find the critical path on this AOE Graph.
 
 
 #### Reference

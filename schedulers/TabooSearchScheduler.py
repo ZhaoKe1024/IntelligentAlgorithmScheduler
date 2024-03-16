@@ -5,7 +5,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.Entities import Cloudlet, VM
+from eautils.Entities import Cloudlet, VM
 
 
 class TSScheduler:

@@ -7,7 +7,7 @@
 from schedulers.DPSOTaskScheduling import DPSO
 from schedulers.GAScheduler import GAScheduler
 from schedulers.SAScheduler import SAScheduler
-from utils.Entities import VM, Cloudlet
+from eautils.Entities import VM, Cloudlet
 
 
 def main(use_data, use_algorithm):

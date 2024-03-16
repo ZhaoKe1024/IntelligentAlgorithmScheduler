@@ -2,9 +2,9 @@
 # @Author : ZhaoKe
 # @Time : 2021-04-22 11:35
 import numpy as np
-from utils.functions import logistic_function
-from utils.Entities import Cloudlet, VM, calculate_fitness
-from utils.AlgorithmEntities import DParticle
+from eautils.functions import logistic_function
+from eautils.Entities import Cloudlet, VM, calculate_fitness
+from eautils.AlgorithmEntities import DParticle
 from matplotlib import pyplot as plt
 
 

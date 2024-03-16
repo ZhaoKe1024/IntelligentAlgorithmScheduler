@@ -2,7 +2,7 @@
 # @Author : ZhaoKe
 # @Time : 2021-03-19 15:22
 import numpy as np
-from utils.Entities import Cloudlet, VM, calculate_fitness
+from eautils.Entities import Cloudlet, VM, calculate_fitness
 from matplotlib import pyplot as plt
 
 

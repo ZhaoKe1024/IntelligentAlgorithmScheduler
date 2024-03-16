@@ -31,7 +31,7 @@ import time
 import matplotlib.pyplot as plt
 from fjspkits.fjsp_utils import read_Data_from_file
 from fjspkits.FJSP_GAModel import Genetic4FJSP
-from utils.plottools import plot_gantt
+from eautils.plottools import plot_gantt
 
 
 def run():
@@ -40,13 +40,13 @@ def run():
     machine_num: 解向量(List<Machine>)的长度
     task_num: 全部工序数，暂时没啥用
     """
-    jobs, machine_num, task_num = read_Data_from_file("./datasets/fjsp_sets/brandimarte_mk03.txt")
+    jobs, machine_num, task_num = read_Data_from_file("./datasets/fjsp_sets/brandimarte_mk01.txt")
 
     ga4fjsp = Genetic4FJSP(jobs=jobs, machine_num=machine_num, task_num=task_num)
     best_gene, results = ga4fjsp.schedule()
-    if not os.path.exists("fjspkits/results/mk03"):
-        os.mkdir("fjspkits/results/mk03")
-    output_prefix = "fjspkits/results/mk03/t" + time.strftime("%Y%m%d%H%M", time.localtime())
+    if not os.path.exists("fjspkits/results/mk01"):
+        os.mkdir("fjspkits/results/mk01")
+    output_prefix = "fjspkits/results/mk01/t" + time.strftime("%Y%m%d%H%M", time.localtime())
     print(results)
     np.savetxt(output_prefix + "_itervalues.txt", results, fmt='%.18e', delimiter=',', newline='\n')
 
@@ -66,8 +66,10 @@ def run():
     for machine in best_gene.get_machines():
         for task in machine.task_list:
             makespan = makespan if makespan > task.finish_time else task.finish_time
-            print(f"Task({task.parent_job}-{task.injob_index})" + f"[{task.start_time},{task.finish_time}]", end='||')
-            res_in.write(f"Task({task.parent_job}-{task.injob_index})" + f"[{task.start_time},{task.finish_time}]||")
+            # print(f"Task({task.parent_job}-{task.injob_index})" + f"[{task.start_time},{task.finish_time}]", end='||')
+            # res_in.write(f"Task({task.parent_job}-{task.injob_index})" + f"[{task.start_time},{task.finish_time}]||")
+            print(f"({task.parent_job}-{task.injob_index})" + f"[{task.start_time},{task.finish_time}]", end='|')
+            res_in.write(f"({task.parent_job}-{task.injob_index})" + f"[{task.start_time},{task.finish_time}]|")
         print()
         res_in.write('\n')
     # print(f"最大Task数: {self.task_num}")

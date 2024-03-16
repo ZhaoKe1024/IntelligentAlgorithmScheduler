@@ -129,8 +129,30 @@ input:
 
 
 def plot_gantt(df, machine_num, fname):
-    rgb_number = ["#FF0000", "#FFD700", "#FFFF00", "#7CFC00", "#008000", "#00FFFF",
-                  "#0000FF", "#6A5ACD", "#800080", "#696969", "#800000", "#D3D3D3"]
+    # 对比度max的配色
+    rgb_number = ["#e6194B",  # 0
+                  "#3cb44b",
+                  "#ffe119",
+                  "#4363d8",
+                  "#f59231",
+                  "#911eb4",  # 5
+                  "#42d4f4",
+                  "#f032e6",
+                  "#bfef45",
+                  "#fabed4",
+                  "#469990",  # 10
+                  "#dcbeff",
+                  "#9A6324",
+                  "#fffac8",
+                  "#800000",
+                  "#aaffc3",
+                  "#808000",  # 16
+                  "#ffd8b1",
+                  "#000075",
+                  "#a9a9a9",
+                  "#ffffff",
+                  "#000000",  # 21
+        ]
     def color(row):
         c_dict = {}
         for i, rgb in enumerate(rgb_number):
@@ -145,14 +167,14 @@ def plot_gantt(df, machine_num, fname):
     ax.barh(df.Machine, df.days_start_to_end, left=df.start_num, color=df.color, alpha=0.7)
     ax.set_yticks(range(machine_num), ["Machine" + str(i) for i in range(machine_num)])
 
-    # texts
-    for idx, row in df.iterrows():
-        # ax.text(row.end_num + 0.1, idx, f"{int(row.Completion * 100)}%", va='center', alpha=0.8)
-        ax.text(row.start_num + 0.5, row.Machine, row.Task, fontsize=10, va='center', ha='right', alpha=0.8)
+    # # texts
+    # for idx, row in df.iterrows():
+    #     # ax.text(row.end_num + 0.1, idx, f"{int(row.Completion * 100)}%", va='center', alpha=0.8)
+    #     ax.text(row.start_num + 0.5, row.Machine, row.Task, fontsize=10, va='center', ha='right', alpha=0.8)
 
     # grid lines
     ax.set_axisbelow(True)
-    ax.xaxis.grid(color='gray', linestyle='dashed', alpha=0.2, which='both')
+    ax.xaxis.grid(color='gray', linestyle='dashed', alpha=0.1, which='both')
 
     # ticks
     xticks = np.arange(0, df.end_num.max() + 1, 3)
@@ -211,8 +233,10 @@ def plot_gantt(df, machine_num, fname):
     ax1.spines['bottom'].set_visible(False)
     ax1.set_xticks([])
     ax1.set_yticks([])
-    plt.savefig(fname, dpi=300, format='png')
-    # plt.show()
+    if fname:
+        plt.savefig(fname, dpi=300, format='png')
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':

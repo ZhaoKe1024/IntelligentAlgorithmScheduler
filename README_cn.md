@@ -31,10 +31,6 @@ root
 └─utils/
 │    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).
 │    └─plottools.py: 绘制甘特图
-└─GraphAlgorithm.py: AOE and AOV 算法，例如关键路径、拓扑排序.
-└─datastructure/
-│    └─ActivityGraph.py: Definition of AOE(activities on Edges) and AOV(activities on Vertices) Model.
-│    └─ *.py: 用于图模型的基础数据结构和实体类.
 └─SchedulerScaleandFitness.py: This file is used to compare the optimal solutions of multiple algorithms and their convergence curves.
 └─Schedulers.py: Similar to the above, it includes comparative experiments for different groups.
 └─chaosTest.py: Similar to the above, it includes comparative experiments for different groups.
@@ -61,8 +57,6 @@ utils/*.py: 工具类[README.md](README.md)
 ``` python ./JSSP_executor.py ```
 
 ``` python ./simulate.py ```
-
-``` python ./GraphAlgorithm.py ```
 
 #### 使用说明
 

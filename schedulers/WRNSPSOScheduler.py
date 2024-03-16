@@ -3,7 +3,7 @@
 # @Time : 2021-03-17 11:06
 # binary particle
 import numpy as np
-from utils.Entities import Cloudlet, VM
+from eautils.Entities import Cloudlet, VM
 from matplotlib import pyplot as plt
 
 
