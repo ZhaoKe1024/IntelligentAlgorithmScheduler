@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 # @Author : ZhaoKe
 # @Time : 2021-03-21 10:43
+from copy import deepcopy
+
 import numpy as np
 from eautils.Entities import calculate_fitness
 from eautils.solution_struct import SimpleSolution, SimpleSolutionGenerator
 
 
 class GAScheduler:
-    def __init__(self, cloudlets, vms, population_number=100, times=500):
+    def __init__(self, cloudlets, vms, population_number=100, times=800):
         self.cloudlets = cloudlets
         self.vms = vms
         self.cloudlet_num = len(cloudlets)  # 任务数量也就是粒子长度
@@ -17,8 +19,8 @@ class GAScheduler:
         self.times = times  # 迭代代数
 
         # 变异和交叉概率
-        self.mp = 0.1
-        self.cp = 0.9
+        self.mp = 0.15
+        self.cp = 0.85
 
         self.best_gene = None
 
@@ -66,10 +68,13 @@ class GAScheduler:
     # 随机单点变异
     def mutation(self):
         for i in range(self.population_number):
-            point = np.random.randint(0, self.cloudlet_num)
             if np.random.rand() < self.mp:
-                self.genes[i].solution[point] = np.random.randint(0, self.machine_number)
-                self.genes[i].fitness = calculate_fitness(self.genes[i].solution, self.cloudlets, self.vms)
+                point = np.random.randint(0, self.cloudlet_num)
+                new_gene = SimpleSolution()
+                new_gene.solution = deepcopy(self.genes[i].solution)
+                new_gene.solution[point] = np.random.randint(0, self.machine_number)
+                new_gene.fitness = calculate_fitness(new_gene.solution, self.cloudlets, self.vms)
+                self.genes[i] = new_gene
 
     # 选择群体最优个体
     def select_best(self) -> SimpleSolution:
@@ -104,7 +109,7 @@ class GAScheduler:
         self.best_gene = self.genes[0]
         results = []
         for t in range(self.times):
-            best_g = self.select_best()
+            best_g = deepcopy(self.select_best())
             # 选择,
             g1, g2 = self.select()
             # 交叉
@@ -120,9 +125,11 @@ class GAScheduler:
                     local_gene = g
             results.append(local_gene.fitness)
             if t % 20 == 0:
-                print("GA iter: ", t, "/", self.times, "适应度: ", local_gene.fitness)
+                print("GA iter: ", t, "/", self.times, "适应度 local: ", local_gene.fitness)
             if local_gene.fitness > self.best_gene.fitness:
                 self.best_gene = local_gene
+            if t % 20 == 0:
+                print("GA iter: ", t, "/", self.times, "适应度 best: ", self.best_gene.fitness)
             # print("最优解：", self.genes[ind].solution)
         # return results
 

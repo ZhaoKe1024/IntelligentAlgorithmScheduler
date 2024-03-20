@@ -67,6 +67,7 @@ def main(use_data, use_algorithm):
 def run():
     use_algorithm = "GA"
     use_data = 1
+    # GA data1 best fitness: 142.283
     main(use_data, use_algorithm)
 
 
