@@ -70,8 +70,7 @@ class GAScheduler:
         for i in range(self.population_number):
             if np.random.rand() < self.mp:
                 point = np.random.randint(0, self.cloudlet_num)
-                new_gene = SimpleSolution()
-                new_gene.solution = deepcopy(self.genes[i].solution)
+                new_gene = deepcopy(self.genes[i])
                 new_gene.solution[point] = np.random.randint(0, self.machine_number)
                 new_gene.fitness = calculate_fitness(new_gene.solution, self.cloudlets, self.vms)
                 self.genes[i] = new_gene
