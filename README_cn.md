@@ -1,10 +1,18 @@
 [Endlish](README.md)|[简体中文](README_cn.md)
 
 # Intelligent Algorithm Scheduler
+遗传算法解决云任务调度:
+- simulate.py
+- ./schedulers/GAScheduler.py
+
+遗传算法（和其他算法）解决柔性作业车间调度FJSP
+- JSSP_executor.py
+- ./fjspkits/Genetic4FJSP.py
+- ./fjspkits/*  # 其他算法（粒子群、蚁群、模拟退火、禁忌搜索等等）
 
 #### 介绍
 本仓库目前提供两种模型：
-1. 用智能算法解决FJSP问题。并绘制甘特图。
+1. 用智能算法(遗传算法)解决FJSP问题。并绘制甘特图。
 
 ``` python ./JSSP_executor.py ```
 
@@ -20,14 +28,19 @@
 #### 代码结构
 ```
 root
-└─JSSP_executor.py
-└─fjspkits/
+└─JSSP_executor.py  柔性作业车间调度问题的启动程序
+└─fjspkits/  柔性作业车间调度相关的程序
 │    └─fjsp_entities.py: Job, Task, Machine 的定义。
 │    └─fjsp_utils.py: read_file 通过文件读取生成数据, calculate execute time 计算每个机器的执行时间.
 │    └─FJSP_GAModel.py: FJSP model 工作流类.
-└─simulate.py: 用于云服务负载均衡调度的类 This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
-└─schedulers/
+└─simulate.py: 用于云服务负载均衡调度的启动程序 This code can be run to obtain results, and algorithms, data, and parameters can be changed within it.
+└─schedulers/  各种智能算法，解决云任务调度问题相关
 │    └─*.py, 算法库.
+│    └─GAScheduler.py,  遗传算法
+│    └─DPSOTaskScheduler.py,  离散粒子群算法
+│    └─SAScheduler.py,  模拟退火算法
+│    └─ACScheduler.py,  蚁群算法
+│    └─TabooSearchScheduler.py, 禁忌搜索算法
 └─utils/
 │    └─Entities : This file includes some entities that could tasks need. such as Cloudlet(cloud tasks to allocated), VM(containers Virtual Machines to execute tasks(cloudlets)).
 │    └─plottools.py: 绘制甘特图

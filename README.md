@@ -2,10 +2,18 @@
 
 # Intelligent Algorithm Scheduler
 
+genetic algorithm for Cloud Scheduler:
+- simulate.py
+- ./schedulers/GAScheduler.py
+
+genetic algorithm for FJSP
+- JSSP_executor.py
+- ./fjspkits/Genetic4FJSP.py
+
 # Introduction
 This repository provides two models currently.
 
-1. Solving FJSP using Intelligent Algorithm, and draw gantt plot.
+1. Solving FJSP using Intelligent Algorithm(Genetic Algorithm), and draw gantt plot.
 
 ``` python ./JSSP_executor.py ```
 
