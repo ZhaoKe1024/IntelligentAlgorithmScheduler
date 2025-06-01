@@ -21,7 +21,15 @@ This repository provides two models currently.
 
 ![](t202311201228_iterplot.png)
 
-2. This project is dedicated to solving cloud computing scheduling problems using intelligent algorithms. It can replace evaluation functions, plot and store results and charts. It should be noted that all are discrete scheduling problems, which means that all particle swarm optimization algorithms are discrete particle swarm optimization algorithms.
+2. Travel Saleman Problem
+
+solve the TSP using Genetic Algorithm and update the path plot dynamically.
+
+./TSP_GA.py
+
+![](TSP_10cities.png)
+
+3. This project is dedicated to solving cloud computing scheduling problems using intelligent algorithms. It can replace evaluation functions, plot and store results and charts. It should be noted that all are discrete scheduling problems, which means that all particle swarm optimization algorithms are discrete particle swarm optimization algorithms.
 In addition, the Optimization on Graph and Flexible Job-Shop Scheduling Problem are developing.
 
 ``` python ./simulate.py ```
@@ -63,6 +71,11 @@ Not every algorithm has a paper, as some are my own improvement attempts.
 
 utils/*.py: tools 
 The remaining codes that have not been introduced are utility classes or abandoned code from that year.
+
+### Test Functions
+
+./eautils/test_functions.py
+
 
 ### Example
 
